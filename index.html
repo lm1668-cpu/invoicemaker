@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>工程及設計發票系統 Pro (Quotation / Invoice / Receipt)</title>
+  <title>INVOICE PRO — 工程及室內設計單據系統</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Supabase JS SDK -->
@@ -13,128 +17,242 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
-    /* 經典發票格式專屬樣式 */
-    .invoice-paper {
-      width: 794px;
-      min-height: 1080px;
+    body {
+      font-family: 'Inter', 'Noto Sans HK', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f4f6fb;
+      color: #0f172a;
+    }
+
+    /* 現代化輸入框與卡片樣式 */
+    .ui-card {
       background: #ffffff;
-      color: #1a1a1a;
-      font-family: Arial, Helvetica, sans-serif;
-      padding: 44px 50px;
+      border-radius: 18px;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    .ui-input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 13.5px;
+      background-color: #f8fafc;
+      transition: all 0.18s ease;
+      color: #0f172a;
+    }
+    .ui-input:focus {
+      background-color: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      outline: none;
+    }
+
+    .ui-label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 5px;
+      letter-spacing: 0.01em;
+    }
+
+    /* ==================== A4 專業發票印刷級佈局 ==================== */
+    .invoice-paper {
+      width: 794px; /* 標準 A4 96DPI 闊度 */
+      min-height: 1122px; /* 標準 A4 高度比例 */
+      background: #ffffff;
+      color: #1e293b;
+      font-family: 'Inter', 'Noto Sans HK', Arial, sans-serif;
+      padding: 52px 56px 46px 56px;
       box-sizing: border-box;
       position: relative;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      border-radius: 2px;
     }
 
+    /* 右上角大標題 (還原並精煉原圖藍灰質感) */
     .inv-title {
-      color: #8c9fc2;
-      font-size: 36px;
+      color: #7e95bf;
+      font-size: 40px;
       font-weight: 700;
-      letter-spacing: 2px;
+      letter-spacing: 2.5px;
       text-align: right;
       line-height: 1;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       text-transform: uppercase;
     }
 
+    /* 右上角 INVOICE # / DATE 表格 */
     .inv-header-table {
-      width: 340px;
+      width: 330px;
       border-collapse: collapse;
       margin-left: auto;
       font-size: 12px;
     }
-
     .inv-header-table th {
-      background-color: #d9e1f2;
-      color: #1a1a1a;
+      background-color: #d9e2f3;
+      color: #1e293b;
       font-weight: 700;
-      padding: 5px 10px;
-      border: 1px solid #a6a6a6;
+      letter-spacing: 0.6px;
+      padding: 6px 12px;
+      border: 1px solid #94a3b8;
       text-align: center;
       width: 50%;
     }
-
     .inv-header-table td {
-      padding: 5px 10px;
-      border: 1px solid #a6a6a6;
+      padding: 6px 12px;
+      border: 1px solid #94a3b8;
       text-align: center;
-      color: #262626;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 12.5px;
+    }
+
+    /* BILL TO 標題框 */
+    .inv-billto-header {
+      background-color: #d9e2f3;
+      border: 1px solid #94a3b8;
+      color: #1e293b;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      padding: 6px 12px;
+      width: 260px;
+      margin-top: 26px;
+      margin-bottom: 8px;
+    }
+
+    /* 收費項目主表格 (還原原圖長框連直線設計) */
+    .inv-items-box {
+      margin-top: 22px;
+      border: 1px solid #94a3b8;
+      display: flex;
+      flex-direction: column;
+      min-height: 500px;
+    }
+
+    .inv-items-header {
+      display: flex;
+      background-color: #d9e2f3;
+      border-bottom: 1px solid #94a3b8;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      color: #1e293b;
+    }
+    .inv-items-header > div:first-child {
+      width: 76%;
+      padding: 7px 14px;
+      border-right: 1px solid #94a3b8;
+    }
+    .inv-items-header > div:last-child {
+      width: 24%;
+      padding: 7px 14px;
+      text-align: right;
+    }
+
+    .inv-items-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: linear-gradient(to right, transparent calc(76% - 1px), #94a3b8 calc(76% - 1px), #94a3b8 76%, transparent 76%);
+      padding-top: 8px;
+      padding-bottom: 16px;
+    }
+
+    .inv-item-row {
+      display: flex;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #1e293b;
+    }
+    .inv-item-row:hover {
+      background-color: rgba(241, 245, 249, 0.5);
+    }
+    .inv-item-desc {
+      width: 76%;
+      padding: 5px 14px;
+      word-break: break-word;
+    }
+    .inv-item-amt {
+      width: 24%;
+      padding: 5px 14px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    /* 總計與訂金列 */
+    .inv-summary-footer {
+      border-top: 1px solid #94a3b8;
+    }
+    .inv-summary-line {
+      display: flex;
+      border-bottom: 1px solid #cbd5e1;
+      font-size: 12.5px;
+      background-color: #f8fafc;
+    }
+    .inv-summary-line > div:first-child {
+      width: 76%;
+      padding: 6px 14px;
+      text-align: right;
+      font-weight: 600;
+      border-right: 1px solid #94a3b8;
+    }
+    .inv-summary-line > div:last-child {
+      width: 24%;
+      padding: 6px 14px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
     }
 
-    .inv-billto-header {
-      background-color: #d9e1f2;
-      border: 1px solid #a6a6a6;
-      font-weight: 700;
-      font-size: 12px;
-      padding: 5px 10px;
-      width: 240px;
-      margin-top: 24px;
-      margin-bottom: 6px;
+    .inv-total-line {
+      display: flex;
+      background-color: #d9e2f3;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .inv-total-line > div:first-child {
+      width: 76%;
+      padding: 9px 14px;
+      text-align: right;
+      letter-spacing: 0.5px;
+      border-right: 1px solid #94a3b8;
+    }
+    .inv-total-line > div:last-child {
+      width: 24%;
+      padding: 9px 14px;
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
     }
 
-    .inv-items-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      font-size: 13px;
-    }
-
-    .inv-items-table th {
-      background-color: #d9e1f2;
-      border: 1px solid #a6a6a6;
-      padding: 6px 12px;
-      font-weight: 700;
-      font-size: 12px;
-    }
-
-    .inv-items-table td {
-      border-left: 1px solid #a6a6a6;
-      border-right: 1px solid #a6a6a6;
-      padding: 6px 12px;
-      vertical-align: top;
-    }
-
-    .inv-items-body-spacer {
-      height: 220px;
-      border-left: 1px solid #a6a6a6;
-      border-right: 1px solid #a6a6a6;
-      border-bottom: 1px solid #a6a6a6;
-    }
-
-    .inv-summary-row td {
-      border: 1px solid #a6a6a6;
-      padding: 6px 12px;
-      font-size: 13px;
-    }
-
-    .inv-total-row td {
-      border: 1px solid #a6a6a6;
-      background-color: #d9e1f2;
-      font-weight: 700;
-      padding: 8px 12px;
-      font-size: 15px;
-    }
-
-    /* PAID 紅色印章水印 */
+    /* PAID 紅色質感印章 */
     .paid-stamp {
       position: absolute;
-      top: 42%;
-      right: 12%;
-      border: 5px solid rgba(220, 38, 38, 0.75);
-      color: rgba(220, 38, 38, 0.75);
-      font-size: 46px;
+      top: 40%;
+      right: 11%;
+      border: 4px solid rgba(220, 38, 38, 0.78);
+      outline: 2px solid rgba(220, 38, 38, 0.78);
+      outline-offset: -7px;
+      color: rgba(220, 38, 38, 0.82);
+      font-size: 44px;
       font-weight: 900;
-      padding: 6px 24px;
-      border-radius: 10px;
-      transform: rotate(-15deg);
-      letter-spacing: 4px;
+      padding: 8px 28px;
+      border-radius: 8px;
+      transform: rotate(-14deg);
+      letter-spacing: 5px;
       pointer-events: none;
       text-transform: uppercase;
       z-index: 20;
+      background-color: rgba(255, 255, 255, 0.15);
     }
 
     .preview-scale-wrapper {
@@ -159,267 +277,283 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen pb-24">
+<body class="min-h-screen pb-28">
 
-  <!-- ==================== 功能 6: PIN 密碼鎖保護層 ==================== -->
-  <div id="pin-lock-overlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-xs w-full p-6 text-center space-y-4 shadow-2xl">
-      <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">🔒</div>
-      <h2 class="text-lg font-bold text-slate-800">工程發票系統安全鎖</h2>
-      <p class="text-xs text-slate-500">請輸入訪問密碼以載入客戶及帳目資料</p>
-      <input type="password" id="pin-input" inputmode="numeric" placeholder="輸入密碼 (預設: 1668)" 
+  <!-- ==================== PIN 密碼鎖保護層 ==================== -->
+  <div id="pin-lock-overlay" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-7 text-center space-y-4 shadow-2xl border border-slate-100">
+      <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg shadow-blue-500/30">🔒</div>
+      <div>
+        <h2 class="text-lg font-extrabold text-slate-900">INVOICE PRO</h2>
+        <p class="text-xs text-slate-500 mt-0.5">請輸入安全密碼解鎖系統</p>
+      </div>
+      <input type="password" id="pin-input" inputmode="numeric" placeholder="••••" 
         onkeydown="if(event.key==='Enter') verifyPin()"
-        class="w-full border-2 border-slate-300 rounded-xl px-4 py-2.5 text-center text-lg font-bold tracking-widest focus:border-blue-500 outline-none" />
-      <p id="pin-error" class="text-xs text-red-500 hidden">密碼不正確，請重試！</p>
-      <button onclick="verifyPin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl shadow">
+        class="w-full border-2 border-slate-200 bg-slate-50 rounded-2xl px-4 py-3 text-center text-xl font-bold tracking-[0.4em] focus:border-blue-600 focus:bg-white outline-none transition" />
+      <p id="pin-error" class="text-xs text-red-500 font-medium hidden">❌ 密碼不正確，請重試（預設 1668）</p>
+      <button onclick="verifyPin()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-2xl shadow-lg shadow-blue-600/25 transition active:scale-[0.98]">
         解鎖進入系統
       </button>
     </div>
   </div>
 
-  <!-- 頂部導航欄 -->
-  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <span class="text-xl font-bold tracking-wide text-blue-400">INVOICE PRO</span>
-        <span class="text-xs bg-emerald-900 text-emerald-300 px-2.5 py-0.5 rounded font-medium" id="db-status-badge">🔄 連接中...</span>
+  <!-- ==================== 頂部毛玻璃導航欄 ==================== -->
+  <header class="bg-slate-900/95 backdrop-blur-md text-white sticky top-0 z-40 shadow-lg border-b border-slate-800">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-black text-sm shadow">IP</div>
+        <div>
+          <span class="text-base font-extrabold tracking-tight text-white">INVOICE <span class="text-blue-400">PRO</span></span>
+          <span class="ml-2 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium" id="db-status-badge">🔄 連接中</span>
+        </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="changePinCode()" class="text-xs bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-lg text-slate-300">
-          🔑 改密碼
+        <button onclick="changePinCode()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-2.5 py-1.5 rounded-xl text-slate-300 transition">
+          🔑 密碼
         </button>
-        <button onclick="openDbModal()" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg font-medium transition">
-          ⚙️ DB 狀態
+        <button onclick="openDbModal()" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3 py-1.5 rounded-xl font-medium transition">
+          ⚙️ 雲端設定
         </button>
       </div>
     </div>
 
     <!-- 主功能切換 Tab -->
-    <div class="max-w-6xl mx-auto px-2 flex border-t border-slate-800 text-sm overflow-x-auto">
-      <button onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-2.5 px-3 text-center font-semibold border-b-2 border-blue-400 text-blue-400 whitespace-nowrap">
+    <div class="max-w-5xl mx-auto px-3 flex gap-1 text-xs sm:text-sm overflow-x-auto">
+      <button onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-2.5 px-3 text-center font-bold border-b-2 border-blue-400 text-blue-400 whitespace-nowrap transition">
         ✏️ 開立/編輯單據
       </button>
-      <button onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap">
-        📄 預覽及 WhatsApp
+      <button onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap transition">
+        📄 A4 預覽及傳送
       </button>
-      <button onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap">
+      <button onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap transition">
         🗂️ 單據紀錄及追數
       </button>
-      <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap">
+      <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap transition">
         🛠️ 後台資料管理
       </button>
     </div>
   </header>
 
-  <!-- 主內容區 -->
-  <main class="max-w-5xl mx-auto p-3 sm:p-6">
+  <!-- ==================== 主內容區 ==================== -->
+  <main class="max-w-5xl mx-auto p-3.5 sm:p-6">
 
     <!-- ==================== TAB 1: 開立/編輯單據 ==================== -->
     <section id="view-editor" class="space-y-5">
-      <!-- 頂部狀態與快速轉單欄 -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <span class="text-xs text-slate-500 font-medium">當前模式：</span>
-          <span id="current-edit-status" class="text-sm font-bold text-emerald-600">新單據草稿</span>
+      <!-- 頂部狀態欄 -->
+      <div class="ui-card p-4 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-white to-blue-50/40">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs text-slate-500 font-medium">當前狀態：</span>
+          <span id="current-edit-status" class="text-sm font-extrabold text-slate-800">新單據草稿</span>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-medium">
+          <button onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-semibold transition">
             ➕ 開新空白單
           </button>
-          <button onclick="saveInvoiceToDb()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold shadow-sm">
+          <button onclick="saveInvoiceToDb()" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">
             💾 儲存單據至雲端
           </button>
         </div>
       </div>
 
-      <!-- 1. 單據類型、狀態、公司選擇 -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-          <h2 class="font-bold text-slate-800">🏢 1. 單據屬性及開單公司</h2>
-          <select id="select-company" onchange="applySelectedCompany(this.value)" class="text-xs border border-blue-300 bg-blue-50 text-blue-800 rounded-lg px-2.5 py-1.5 font-semibold">
-            <option value="">-- 從資料庫切換開單公司 --</option>
+      <!-- 1. 單據屬性及開單公司 -->
+      <div class="ui-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">1</span>
+            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">單據屬性及開單公司</h2>
+          </div>
+          <select id="select-company" onchange="applySelectedCompany(this.value)" class="text-xs border border-blue-200 bg-blue-50/80 hover:bg-blue-100/80 text-blue-800 rounded-xl px-3 py-2 font-bold outline-none transition cursor-pointer">
+            <option value="">⚡ 快速切換開單公司...</option>
           </select>
         </div>
 
-        <!-- 功能 2 & 4: 單據類型 (Quotation/Invoice/Receipt) 與 付款狀態 -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+        <!-- 單據類型 / 找數狀態 / 單號 / 日期 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70">
           <div>
-            <label class="block text-xs font-bold text-blue-800 mb-1">📑 單據類型 (一單三用)</label>
-            <select id="doc-type" onchange="renderInvoicePreview()" class="w-full border border-blue-300 rounded-lg px-2.5 py-2 text-sm font-bold bg-white text-slate-800">
+            <label class="ui-label text-blue-700">📑 單據類型 (一單三用)</label>
+            <select id="doc-type" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
               <option value="QUOTATION">QUOTATION (報價單)</option>
               <option value="INVOICE" selected>INVOICE (發票)</option>
               <option value="RECEIPT">RECEIPT (正式收據)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">💰 找數狀態</label>
-            <select id="payment-status" onchange="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-2.5 py-2 text-sm font-bold bg-white">
+            <label class="ui-label">💰 找數狀態</label>
+            <select id="payment-status" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
               <option value="UNPAID">🔴 未付款 (Unpaid)</option>
               <option value="PARTIAL">🟡 部分付款 (Partial)</option>
               <option value="PAID">🟢 已付清 (蓋 PAID 印)</option>
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">單據編號 (#)</label>
-            <input type="text" id="inv-number" value="23" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white font-mono" />
+            <label class="ui-label">單據編號 (#)</label>
+            <input type="text" id="inv-number" value="23" oninput="renderInvoicePreview()" class="ui-input font-mono font-bold !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">單據日期 (DATE)</label>
-            <input type="date" id="inv-date" onchange="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">單據日期 (DATE)</label>
+            <input type="date" id="inv-date" onchange="renderInvoicePreview()" class="ui-input !bg-white" />
           </div>
         </div>
 
-        <!-- 公司 Logo、印章與收款 QR Code 即時預覽 -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
-          <!-- Logo -->
-          <div class="flex items-center gap-3">
-            <div id="editor-logo-preview" class="w-14 h-14 bg-white border rounded flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 Logo</div>
-            <div class="flex-1">
-              <label class="block text-xs font-semibold text-slate-700">公司 Logo</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[11px] w-full" />
-              <button onclick="clearEditorImage('logo')" class="text-[11px] text-red-500 hover:underline">移除 Logo</button>
+        <!-- 視覺資產：Logo / 公司印章 / FPS QR Code -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+            <div id="editor-logo-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400 shadow-sm">無 Logo</div>
+            <div class="flex-1 min-w-0">
+              <label class="block text-xs font-bold text-slate-700 mb-1">公司 Logo</label>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[11px] w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold" />
+              <button onclick="clearEditorImage('logo')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
             </div>
           </div>
 
-          <!-- 公司印章簽名 (功能 5) -->
-          <div class="flex items-center gap-3">
-            <div id="editor-chop-preview" class="w-14 h-14 bg-white border rounded flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無印章</div>
-            <div class="flex-1">
-              <label class="flex items-center gap-1 text-xs font-semibold text-slate-700">
-                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" />
+          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+            <div id="editor-chop-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400 shadow-sm">無印章</div>
+            <div class="flex-1 min-w-0">
+              <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1 cursor-pointer">
+                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-blue-600" />
                 蓋公司印章/簽名
               </label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[11px] w-full" />
-              <button onclick="clearEditorImage('chop')" class="text-[11px] text-red-500 hover:underline">移除印章</button>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[11px] w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold" />
+              <button onclick="clearEditorImage('chop')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
             </div>
           </div>
 
-          <!-- 收款 QR Code (功能 1) -->
-          <div class="flex items-center gap-3">
-            <div id="editor-qr-preview" class="w-14 h-14 bg-white border rounded flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 QR</div>
-            <div class="flex-1">
-              <label class="block text-xs font-semibold text-slate-700">FPS / 收款 QR Code</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[11px] w-full" />
-              <button onclick="clearEditorImage('qr')" class="text-[11px] text-red-500 hover:underline">移除 QR</button>
+          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+            <div id="editor-qr-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400 shadow-sm">無 QR</div>
+            <div class="flex-1 min-w-0">
+              <label class="block text-xs font-bold text-slate-700 mb-1">FPS 收款 QR Code</label>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[11px] w-full text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold" />
+              <button onclick="clearEditorImage('qr')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
             </div>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- 公司文字資料 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">公司名稱 (Company Name)</label>
-            <input type="text" id="comp-name" value="臻藝設計工程有限公司" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">公司名稱 (Company Name)</label>
+            <input type="text" id="comp-name" value="臻藝設計工程有限公司" oninput="renderInvoicePreview()" class="ui-input font-semibold" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">電話 (Phone)</label>
-            <input type="text" id="comp-phone" value="(852) 2888-9999" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">聯絡電話 (Phone)</label>
+            <input type="text" id="comp-phone" value="(852) 2888-9999" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">街道地址 (Street Address)</label>
-            <input type="text" id="comp-address" value="香港九龍觀塘鴻圖道88號" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">街道地址 (Street Address)</label>
+            <input type="text" id="comp-address" value="香港九龍觀塘鴻圖道88號" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">地區 (City, ST ZIP)</label>
-            <input type="text" id="comp-city" value="Kowloon, Hong Kong" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">地區 / 城市 (City, ST ZIP)</label>
+            <input type="text" id="comp-city" value="Kowloon, Hong Kong" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div class="sm:col-span-2">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">🏦 收款辦法 / 銀行戶口 / 轉數快 FPS 備註 (自動印於單據左下角)</label>
-            <textarea id="comp-payment-info" rows="2" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs" placeholder="例如：支票抬頭：臻藝設計工程有限公司 | 恒生銀行：123-456789-001 | 轉數快 FPS ID：1234567">支票抬頭：臻藝設計工程有限公司
+            <label class="ui-label">🏦 收款銀行戶口 / 支票抬頭 / 轉數快 FPS 備註 (自動印於單據左下角)</label>
+            <textarea id="comp-payment-info" rows="2" oninput="renderInvoicePreview()" class="ui-input text-xs leading-relaxed">支票抬頭：臻藝設計工程有限公司
 銀行戶口 (恒生)：288-123456-883 | 轉數快 FPS 電話：9123 4567</textarea>
           </div>
         </div>
       </div>
 
       <!-- 2. 客戶資料 (BILL TO) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-          <h2 class="font-bold text-slate-800">👤 2. 客戶資料 (BILL TO)</h2>
-          <select id="select-client" onchange="applySelectedClient(this.value)" class="text-xs border border-blue-300 bg-blue-50 text-blue-800 rounded-lg px-2.5 py-1.5 font-semibold">
-            <option value="">-- 從常用客戶清單載入 --</option>
+      <div class="ui-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm font-bold">2</span>
+            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">客戶資料 (BILL TO)</h2>
+          </div>
+          <select id="select-client" onchange="applySelectedClient(this.value)" class="text-xs border border-indigo-200 bg-indigo-50/80 hover:bg-indigo-100/80 text-indigo-800 rounded-xl px-3 py-2 font-bold outline-none transition cursor-pointer">
+            <option value="">👤 從常用客戶載入...</option>
           </select>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">聯絡人姓名 (Name)</label>
-            <input type="text" id="client-name" value="Jessica Wili" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">客戶/聯絡人姓名 (Name)</label>
+            <input type="text" id="client-name" value="Jessica Wili" oninput="renderInvoicePreview()" class="ui-input font-semibold" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">客戶公司名稱 (Company Name)</label>
-            <input type="text" id="client-company" value="ABC Properties Ltd." oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">客戶公司名稱 (Company Name)</label>
+            <input type="text" id="client-company" value="ABC Properties Ltd." oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">客戶工程/街道地址 (Street Address)</label>
-            <input type="text" id="client-address" value="8 De Yun Road" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">工程/街道地址 (Street Address)</label>
+            <input type="text" id="client-address" value="8 De Yun Road" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">地區 (City, ST ZIP)</label>
-            <input type="text" id="client-city" value="Kowloon, HK" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">地區 (City, ST ZIP)</label>
+            <input type="text" id="client-city" value="Kowloon, HK" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp 電話 (連區號如 85291234567)</label>
-            <input type="text" id="client-phone" value="85291234567" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">WhatsApp 電話 (連區號如 85291234567)</label>
+            <input type="text" id="client-phone" value="85291234567" oninput="renderInvoicePreview()" class="ui-input font-mono" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">電郵 (Email Address)</label>
-            <input type="email" id="client-email" value="jessica@example.com" oninput="renderInvoicePreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />
+            <label class="ui-label">電郵地址 (Email Address)</label>
+            <input type="email" id="client-email" value="jessica@example.com" oninput="renderInvoicePreview()" class="ui-input" />
           </div>
         </div>
       </div>
 
       <!-- 3. 收費項目清單及分期訂金扣減 -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-          <h2 class="font-bold text-slate-800">📋 3. 工程/收費項目明細 (支援負數折扣)</h2>
-          <div class="flex gap-2">
-            <select id="select-catalog-item" onchange="addCatalogItemToInvoice(this.value); this.value='';" class="text-xs border border-emerald-300 bg-emerald-50 text-emerald-800 rounded-lg px-2.5 py-1.5 font-semibold">
+      <div class="ui-card p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-bold">3</span>
+            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">工程及收費項目明細 (支援負數折扣)</h2>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <select id="select-catalog-item" onchange="addCatalogItemToInvoice(this.value); this.value='';" class="text-xs border border-emerald-200 bg-emerald-50 text-emerald-800 rounded-xl px-3 py-2 font-bold outline-none cursor-pointer">
               <option value="">＋ 插入常用收費項目...</option>
             </select>
-            <button onclick="addLineItem('', 0)" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg font-medium">
-              ＋ 新增空行
+            <button onclick="addLineItem('', 0)" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-xl font-bold shadow-sm transition">
+              ＋ 新增項目行
             </button>
           </div>
         </div>
 
         <div id="line-items-container" class="space-y-2.5"></div>
 
-        <!-- 功能 3: 已收訂金 / 分期款項自動扣減 -->
-        <div class="pt-3 border-t space-y-2 bg-slate-50 p-3 rounded-xl">
+        <!-- 小計與訂金扣減區 -->
+        <div class="pt-4 border-t border-slate-100 space-y-2.5 bg-slate-50/90 p-4 rounded-2xl border border-slate-200/60">
           <div class="flex justify-between items-center text-sm text-slate-600">
-            <span>項目小計 (SUBTOTAL)：</span>
-            <span id="editor-subtotal-display" class="font-mono font-bold">$0.00</span>
+            <span class="font-medium">項目小計 (SUBTOTAL)：</span>
+            <span id="editor-subtotal-display" class="font-mono font-bold text-slate-800">$0.00</span>
           </div>
-          <div class="flex justify-between items-center text-sm text-slate-700">
-            <label for="deposit-paid-input" class="font-semibold">➖ 減：已收訂金 / 上期款項 (LESS DEPOSIT PAID)：</label>
+          <div class="flex flex-wrap justify-between items-center gap-2 text-sm text-slate-700">
+            <label for="deposit-paid-input" class="font-semibold text-red-600">➖ 減：已收訂金 / 上期工程款 (LESS DEPOSIT PAID)：</label>
             <input type="number" step="0.01" id="deposit-paid-input" value="0" oninput="updateTotalDisplay(); renderInvoicePreview();" 
-              class="w-36 border border-slate-300 rounded-lg px-3 py-1 text-right font-mono text-sm bg-white" />
+              class="w-36 border border-slate-300 rounded-xl px-3 py-1.5 text-right font-mono text-sm bg-white font-bold text-red-600 focus:border-blue-500 outline-none" />
           </div>
-          <div class="flex justify-between items-center text-base font-bold text-slate-900 pt-2 border-t">
+          <div class="flex justify-between items-center text-base font-extrabold text-slate-900 pt-2.5 border-t border-slate-200">
             <span>今期應付結餘 (BALANCE DUE / TOTAL)：</span>
-            <span id="editor-total-display" class="text-xl text-blue-700 font-mono">$0.00</span>
+            <span id="editor-total-display" class="text-2xl text-blue-600 font-mono">$0.00</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== TAB 2: 預覽、PDF 及 WhatsApp 傳送 ==================== -->
+    <!-- ==================== TAB 2: A4 預覽、PDF 及 WhatsApp 傳送 ==================== -->
     <section id="view-preview" class="hidden space-y-4">
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-3">
+      <div class="ui-card p-4 space-y-3.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
-          <h3 class="font-bold text-slate-800 text-sm">🚀 單據輸出與 WhatsApp 傳送</h3>
-          <div class="flex gap-2">
-            <button onclick="quickConvertDocType('QUOTATION')" class="text-xs bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded font-medium">轉報價單</button>
-            <button onclick="quickConvertDocType('INVOICE')" class="text-xs bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1 rounded font-medium">轉 Invoice</button>
-            <button onclick="quickConvertDocType('RECEIPT')" class="text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-2.5 py-1 rounded font-medium">轉正式收據(已付)</button>
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-sm">🚀 單據輸出與一鍵 WhatsApp 傳送</h3>
+            <p class="text-[11px] text-slate-500">右上角可快速轉換單據性質，手機撳綠色掣即可連同 PDF 發送給客人</p>
+          </div>
+          <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button onclick="quickConvertDocType('QUOTATION')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-slate-700 transition">報價單</button>
+            <button onclick="quickConvertDocType('INVOICE')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-blue-700 transition">發票 Invoice</button>
+            <button onclick="quickConvertDocType('RECEIPT')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-emerald-700 transition">正式收據(PAID)</button>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <button onclick="sharePdfToWhatsApp()" class="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
+          <button onclick="sharePdfToWhatsApp()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/20 transition text-sm">
             <span>📲 生成 PDF 直送 WhatsApp</span>
           </button>
-          <button onclick="downloadInvoicePdf()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
-            <span>📥 下載 PDF 檔案</span>
+          <button onclick="downloadInvoicePdf()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-blue-600/20 transition text-sm">
+            <span>📥 下載高清 A4 PDF</span>
           </button>
           <button onclick="saveAndPrint()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
             <span>🖨️ 儲存並直接列印</span>
@@ -427,26 +561,27 @@
         </div>
       </div>
 
-      <!-- A4 發票真實渲染區 -->
+      <!-- ==================== A4 專業發票真實渲染區 ==================== -->
       <div id="preview-wrapper" class="preview-scale-wrapper py-2">
         <div id="invoice-print-area" class="invoice-paper">
           <!-- PAID 印章水印 -->
           <div id="inv-render-paid-stamp" class="paid-stamp hidden">PAID</div>
 
+          <!-- 上半部主體 -->
           <div>
-            <!-- 頂部：左邊 Logo + 公司資料，右邊 標題 + 編號日期表 -->
+            <!-- 頂部：左邊 Logo + 公司資料，右邊 INVOICE + 編號日期格仔表 -->
             <div class="flex justify-between items-start">
               <div class="max-w-[54%]">
-                <div id="inv-render-logo-box" class="mb-2.5 hidden">
+                <div id="inv-render-logo-box" class="mb-3 hidden">
                   <img id="inv-render-logo" src="" alt="Company Logo" class="max-h-20 object-contain" />
                 </div>
-                <div id="inv-render-comp-name" class="text-[22px] font-bold text-slate-900 mb-1.5 leading-tight">
+                <div id="inv-render-comp-name" class="text-[23px] font-bold text-slate-900 mb-1.5 leading-snug tracking-tight">
                   [Company Name]
                 </div>
-                <div class="text-[12px] leading-[1.45] text-slate-800 space-y-0.5">
+                <div class="text-[12.5px] leading-[1.55] text-slate-700 space-y-0.5">
                   <div id="inv-render-comp-address">[Street Address]</div>
                   <div id="inv-render-comp-city">[City, ST ZIP]</div>
-                  <div id="inv-render-comp-phone">Phone: (000) 000-0000</div>
+                  <div id="inv-render-comp-phone" class="font-medium text-slate-800">Phone: (000) 000-0000</div>
                 </div>
               </div>
 
@@ -469,59 +604,53 @@
               </div>
             </div>
 
-            <!-- BILL TO 區塊 -->
+            <!-- BILL TO 客戶區塊 -->
             <div>
               <div class="inv-billto-header">BILL TO</div>
-              <div class="text-[12px] leading-[1.5] text-slate-800 pl-1">
-                <div id="inv-render-client-name" class="font-bold">Jessica Wili</div>
-                <div id="inv-render-client-company">ABC Properties Ltd.</div>
+              <div class="text-[12.5px] leading-[1.55] text-slate-800 pl-1.5 space-y-0.5">
+                <div id="inv-render-client-name" class="font-bold text-[13.5px] text-slate-900">Jessica Wili</div>
+                <div id="inv-render-client-company" class="font-medium">ABC Properties Ltd.</div>
                 <div id="inv-render-client-address">8 De Yun Road</div>
                 <div id="inv-render-client-city">Kowloon, HK</div>
                 <div id="inv-render-client-phone">85291234567</div>
-                <div id="inv-render-client-email">jessica@example.com</div>
+                <div id="inv-render-client-email" class="text-slate-600">jessica@example.com</div>
               </div>
             </div>
 
-            <!-- DESCRIPTION & AMOUNT 表格 -->
-            <table class="inv-items-table">
-              <thead>
-                <tr>
-                  <th class="text-left w-[76%]">DESCRIPTION</th>
-                  <th class="text-right w-[24%]">AMOUNT</th>
-                </tr>
-              </thead>
-              <tbody id="inv-render-items-body"></tbody>
-              <tbody>
-                <tr class="inv-items-body-spacer">
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-              <tbody id="inv-render-summary-rows">
-                <!-- 動態顯示 Subtotal / Deposit / Balance Due -->
-              </tbody>
-            </table>
+            <!-- DESCRIPTION & AMOUNT 雙欄長框表格 (帶貫穿中線) -->
+            <div class="inv-items-box">
+              <div class="inv-items-header">
+                <div>DESCRIPTION</div>
+                <div>AMOUNT</div>
+              </div>
+              <div id="inv-render-items-body" class="inv-items-body">
+                <!-- 動態生成收費項目行 -->
+              </div>
+              <div id="inv-render-summary-rows" class="inv-summary-footer">
+                <!-- 動態顯示 Subtotal / Less Deposit / Balance Due -->
+              </div>
+            </div>
           </div>
 
-          <!-- 底部：左邊收款銀行資料 + FPS QR Code，右邊公司印章及簽名 -->
+          <!-- 下半部頁尾：左邊收款銀行資料 + FPS QR Code，右邊公司印章及簽名 -->
           <div class="mt-6 pt-4 border-t border-slate-300 flex justify-between items-end">
             <div class="flex items-center gap-4 max-w-[62%]">
-              <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1 rounded bg-white">
+              <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1.5 rounded-lg bg-white shadow-sm">
                 <img id="inv-render-qr" src="" alt="Payment QR" class="w-20 h-20 object-contain" />
-                <div class="text-[9px] text-center text-slate-500 mt-0.5">Scan to Pay</div>
+                <div class="text-[9px] font-bold text-center text-slate-500 mt-0.5">FPS / Scan to Pay</div>
               </div>
-              <div class="text-[11px] leading-[1.5] text-slate-700">
-                <div class="font-bold text-slate-900 mb-0.5">PAYMENT DETAILS / 收款資料：</div>
+              <div class="text-[11.5px] leading-[1.55] text-slate-700">
+                <div class="font-bold text-slate-900 mb-0.5 tracking-wide">PAYMENT DETAILS / 收款辦法：</div>
                 <div id="inv-render-payment-info" class="whitespace-pre-line"></div>
               </div>
             </div>
 
             <!-- 右下角公司印章與簽名區 -->
-            <div class="w-48 text-center">
+            <div class="w-52 text-center">
               <div class="h-24 flex items-center justify-center relative">
                 <img id="inv-render-chop" src="" alt="Company Chop" class="max-h-24 max-w-full object-contain hidden" />
               </div>
-              <div class="border-t border-slate-500 pt-1 text-[11px] font-semibold text-slate-700" id="inv-render-sign-label">
+              <div class="border-t border-slate-500 pt-1.5 text-[11px] font-semibold text-slate-700 tracking-wide">
                 Authorized Signature & Company Chop
               </div>
             </div>
@@ -533,34 +662,33 @@
 
     <!-- ==================== TAB 3: 單據紀錄庫及未收帳統計 ==================== -->
     <section id="view-history" class="hidden space-y-4">
-      <!-- 功能 4: 帳目統計頂欄 -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-          <div class="text-xs text-slate-500">已開立發票/收據總額</div>
-          <div id="stat-total-invoiced" class="text-xl font-bold text-slate-800 mt-1">$0.00</div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div class="ui-card p-4 border-l-4 border-l-blue-500">
+          <div class="text-xs font-semibold text-slate-500">已開立發票/收據總額</div>
+          <div id="stat-total-invoiced" class="text-2xl font-extrabold font-mono text-slate-900 mt-1">$0.00</div>
         </div>
-        <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm">
-          <div class="text-xs text-emerald-600 font-medium">🟢 已收清款項 (Paid)</div>
-          <div id="stat-total-paid" class="text-xl font-bold text-emerald-700 mt-1">$0.00</div>
+        <div class="ui-card p-4 border-l-4 border-l-emerald-500">
+          <div class="text-xs font-semibold text-emerald-600">🟢 已收清款項 (Paid)</div>
+          <div id="stat-total-paid" class="text-2xl font-extrabold font-mono text-emerald-700 mt-1">$0.00</div>
         </div>
-        <div class="bg-white p-4 rounded-xl border border-red-200 shadow-sm">
-          <div class="text-xs text-red-600 font-medium">🔴 尚欠未收總額 (Outstanding)</div>
-          <div id="stat-total-unpaid" class="text-xl font-bold text-red-600 mt-1">$0.00</div>
+        <div class="ui-card p-4 border-l-4 border-l-red-500">
+          <div class="text-xs font-semibold text-red-600">🔴 尚欠未收總額 (Outstanding)</div>
+          <div id="stat-total-unpaid" class="text-2xl font-extrabold font-mono text-red-600 mt-1">$0.00</div>
         </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-          <h2 class="font-bold text-slate-800 text-base">🗂️ 單據紀錄庫 (支援一鍵轉單及改狀態)</h2>
+      <div class="ui-card p-5">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+          <h2 class="font-extrabold text-slate-800 text-base">🗂️ 歷史單據紀錄庫</h2>
           <div class="flex flex-wrap gap-2">
-            <select id="history-filter-status" onchange="renderHistoryList()" class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs">
+            <select id="history-filter-status" onchange="renderHistoryList()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold bg-white">
               <option value="ALL">全部狀態</option>
               <option value="UNPAID">🔴 只看未付款</option>
               <option value="PARTIAL">🟡 只看部分付款</option>
               <option value="PAID">🟢 只看已付清</option>
             </select>
-            <input type="text" id="history-search" oninput="renderHistoryList()" placeholder="搜尋單號或客戶名稱..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs" />
-            <button onclick="loadAllData()" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-medium">🔄 刷新</button>
+            <input type="text" id="history-search" oninput="renderHistoryList()" placeholder="🔍 搜尋單號或客戶..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-white" />
+            <button onclick="loadAllData()" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">🔄 刷新</button>
           </div>
         </div>
 
@@ -571,51 +699,50 @@
     <!-- ==================== TAB 4: 後台資料管理 ==================== -->
     <section id="view-admin" class="hidden space-y-6">
       
-      <!-- A. 開單公司資料管理 (Logo + 銀行收款 + FPS QR + 公司印章) -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <h2 class="font-bold text-slate-800 text-base border-b pb-2">🏢 1. 開單公司資料、收款戶口及印章管理</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+      <!-- A. 開單公司資料管理 -->
+      <div class="ui-card p-5 space-y-4">
+        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏢 1. 開單公司資料、收款戶口及印章管理</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-comp-id" />
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">公司名稱 *</label>
-            <input type="text" id="admin-comp-name" placeholder="例如：臻藝設計工程有限公司" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">公司名稱 *</label>
+            <input type="text" id="admin-comp-name" placeholder="例如：臻藝設計工程有限公司" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">電話</label>
-            <input type="text" id="admin-comp-phone" placeholder="例如：(852) 2888-9999" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">電話</label>
+            <input type="text" id="admin-comp-phone" placeholder="例如：(852) 2888-9999" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">街道地址</label>
-            <input type="text" id="admin-comp-address" placeholder="室、樓層、大廈、街道" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">街道地址</label>
+            <input type="text" id="admin-comp-address" placeholder="室、樓層、大廈、街道" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">地區 / 城市</label>
-            <input type="text" id="admin-comp-city" placeholder="Kowloon, Hong Kong" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">地區 / 城市</label>
+            <input type="text" id="admin-comp-city" placeholder="Kowloon, Hong Kong" class="ui-input !bg-white" />
           </div>
           <div class="sm:col-span-2">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">🏦 預設收款銀行戶口 / 支票抬頭 / FPS 資料</label>
-            <textarea id="admin-comp-payment" rows="2" placeholder="支票抬頭：XXX | 銀行戶口：XXX | FPS ID：XXX" class="w-full border rounded-lg px-3 py-2 text-xs bg-white"></textarea>
+            <label class="ui-label">🏦 預設收款銀行戶口 / 支票抬頭 / FPS 資料</label>
+            <textarea id="admin-comp-payment" rows="2" placeholder="支票抬頭：XXX | 銀行戶口：XXX | FPS ID：XXX" class="ui-input !bg-white text-xs"></textarea>
           </div>
 
-          <!-- 三張圖片上傳：Logo / 印章 / FPS QR -->
           <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-            <div class="flex items-center gap-2 bg-white p-2 rounded border">
-              <div id="admin-logo-preview" class="w-12 h-12 border rounded flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 Logo</div>
-              <div class="flex-1">
+            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-logo-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 Logo</div>
+              <div class="flex-1 min-w-0">
                 <label class="block text-[11px] font-bold text-slate-700">公司 Logo</label>
                 <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[11px] w-full" />
               </div>
             </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded border">
-              <div id="admin-chop-preview" class="w-12 h-12 border rounded flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無印章</div>
-              <div class="flex-1">
+            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-chop-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無印章</div>
+              <div class="flex-1 min-w-0">
                 <label class="block text-[11px] font-bold text-slate-700">公司印章/簽名</label>
                 <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[11px] w-full" />
               </div>
             </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded border">
-              <div id="admin-qr-preview" class="w-12 h-12 border rounded flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 QR</div>
-              <div class="flex-1">
+            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-qr-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 QR</div>
+              <div class="flex-1 min-w-0">
                 <label class="block text-[11px] font-bold text-slate-700">FPS 收款 QR</label>
                 <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[11px] w-full" />
               </div>
@@ -623,66 +750,66 @@
           </div>
 
           <div class="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <button onclick="resetAdminCompanyForm()" class="text-xs bg-slate-200 px-3 py-2 rounded-lg">清空</button>
-            <button onclick="saveCompanyProfile()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg">💾 儲存公司資料</button>
+            <button onclick="resetAdminCompanyForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
+            <button onclick="saveCompanyProfile()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存公司資料</button>
           </div>
         </div>
         <div id="admin-companies-list" class="space-y-2"></div>
       </div>
 
       <!-- B. 常用客戶資料管理 -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <h2 class="font-bold text-slate-800 text-base border-b pb-2">👥 2. 常用客戶資料管理</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+      <div class="ui-card p-5 space-y-4">
+        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">👥 2. 常用客戶資料管理</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-client-id" />
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">客戶/聯絡人姓名 *</label>
-            <input type="text" id="admin-client-name" placeholder="Jessica Wili" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">客戶/聯絡人姓名 *</label>
+            <input type="text" id="admin-client-name" placeholder="Jessica Wili" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">客戶公司名稱</label>
-            <input type="text" id="admin-client-company" placeholder="ABC Company Ltd" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">客戶公司名稱</label>
+            <input type="text" id="admin-client-company" placeholder="ABC Company Ltd" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">WhatsApp 電話 (連區號 852)</label>
-            <input type="text" id="admin-client-phone" placeholder="85291234567" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">WhatsApp 電話 (連區號 852)</label>
+            <input type="text" id="admin-client-phone" placeholder="85291234567" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">街道地址</label>
-            <input type="text" id="admin-client-address" placeholder="街道及門牌" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">街道地址</label>
+            <input type="text" id="admin-client-address" placeholder="街道及門牌" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">地區</label>
-            <input type="text" id="admin-client-city" placeholder="Hong Kong" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">地區</label>
+            <input type="text" id="admin-client-city" placeholder="Hong Kong" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Email</label>
-            <input type="email" id="admin-client-email" placeholder="client@email.com" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">Email</label>
+            <input type="email" id="admin-client-email" placeholder="client@email.com" class="ui-input !bg-white" />
           </div>
           <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-            <button onclick="resetAdminClientForm()" class="text-xs bg-slate-200 px-3 py-2 rounded-lg">清空</button>
-            <button onclick="saveClientProfile()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg">💾 儲存客戶資料</button>
+            <button onclick="resetAdminClientForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
+            <button onclick="saveClientProfile()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存客戶資料</button>
           </div>
         </div>
         <div id="admin-clients-list" class="space-y-2"></div>
       </div>
 
       <!-- C. 常用收費項目清單管理 -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 space-y-4">
-        <h2 class="font-bold text-slate-800 text-base border-b pb-2">🏷️ 3. 常用工程/收費項目清單管理</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+      <div class="ui-card p-5 space-y-4">
+        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏷️ 3. 常用工程/收費項目清單管理</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-item-id" />
           <div class="sm:col-span-2">
-            <label class="block text-xs font-semibold text-slate-600 mb-1">項目描述 (Description) *</label>
-            <input type="text" id="admin-item-desc" placeholder="例如：首期工程訂金 (40%) 或 清拆及泥水工程" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">項目描述 (Description) *</label>
+            <input type="text" id="admin-item-desc" placeholder="例如：首期工程訂金 (40%) 或 清拆及泥水工程" class="ui-input !bg-white" />
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">預設金額 (負數代表折扣)</label>
-            <input type="number" step="0.01" id="admin-item-amount" placeholder="例如：15000 或 -500" class="w-full border rounded-lg px-3 py-2 text-sm bg-white" />
+            <label class="ui-label">預設金額 (負數代表折扣)</label>
+            <input type="number" step="0.01" id="admin-item-amount" placeholder="例如：15000 或 -500" class="ui-input !bg-white font-mono" />
           </div>
           <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-            <button onclick="resetAdminItemForm()" class="text-xs bg-slate-200 px-3 py-2 rounded-lg">清空</button>
-            <button onclick="saveCatalogItem()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg">💾 儲存收費項目</button>
+            <button onclick="resetAdminItemForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
+            <button onclick="saveCatalogItem()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存收費項目</button>
           </div>
         </div>
         <div id="admin-items-list" class="space-y-2"></div>
@@ -691,48 +818,48 @@
     </section>
   </main>
 
-  <!-- 底部手機快速操作欄 -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-4 py-2.5 flex justify-around items-center z-40 shadow-lg sm:hidden">
-    <button onclick="switchTab('editor')" class="text-xs font-bold text-slate-700 flex flex-col items-center">
+  <!-- ==================== 手機懸浮毛玻璃底部導航欄 ==================== -->
+  <nav class="fixed bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-lg border border-slate-700/80 rounded-2xl px-4 py-2.5 flex justify-around items-center z-40 shadow-2xl sm:hidden">
+    <button onclick="switchTab('editor')" class="text-xs font-bold text-slate-200 hover:text-white flex flex-col items-center">
       <span>✏️ 編輯</span>
     </button>
-    <button onclick="switchTab('preview')" class="text-xs font-bold text-blue-600 flex flex-col items-center">
-      <span>📄 預覽/PDF</span>
+    <button onclick="switchTab('preview')" class="text-xs font-bold text-blue-400 flex flex-col items-center">
+      <span>📄 預覽</span>
     </button>
-    <button onclick="sharePdfToWhatsApp()" class="text-xs font-bold bg-emerald-600 text-white px-3 py-1.5 rounded-lg">
+    <button onclick="sharePdfToWhatsApp()" class="text-xs font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white px-3.5 py-2 rounded-xl shadow-md">
       📲 WhatsApp 發送
     </button>
-    <button onclick="switchTab('history')" class="text-xs font-bold text-slate-700 flex flex-col items-center">
-      <span>🗂️ 追數/舊單</span>
+    <button onclick="switchTab('history')" class="text-xs font-bold text-slate-200 hover:text-white flex flex-col items-center">
+      <span>🗂️ 追數</span>
     </button>
   </nav>
 
   <!-- Supabase 連接設定 Modal -->
-  <div id="db-modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 space-y-4 shadow-2xl">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h3 class="font-bold text-base text-slate-800">⚡ Supabase 資料庫連線設定</h3>
+  <div id="db-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-extrabold text-base text-slate-800">⚡ Supabase 資料庫連線設定</h3>
         <button onclick="closeDbModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
       </div>
       <div class="space-y-3">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Project URL</label>
-          <input type="text" id="supabase-url-input" class="w-full border rounded-lg px-3 py-2 text-xs font-mono" />
+          <label class="ui-label">Supabase Project URL</label>
+          <input type="text" id="supabase-url-input" class="ui-input font-mono text-xs" />
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Supabase Anon Public Key</label>
-          <input type="text" id="supabase-key-input" class="w-full border rounded-lg px-3 py-2 text-xs font-mono" />
+          <label class="ui-label">Supabase Anon Public Key</label>
+          <input type="text" id="supabase-key-input" class="ui-input font-mono text-xs" />
         </div>
       </div>
       <div class="flex justify-end gap-2 pt-2">
-        <button onclick="closeDbModal()" class="text-xs bg-slate-100 px-4 py-2 rounded-lg font-medium">關閉</button>
-        <button onclick="saveSupabaseConfig()" class="text-xs bg-blue-600 text-white px-4 py-2 rounded-lg font-bold">重新連接並同步</button>
+        <button onclick="closeDbModal()" class="text-xs bg-slate-100 px-4 py-2.5 rounded-xl font-semibold">關閉</button>
+        <button onclick="saveSupabaseConfig()" class="text-xs bg-blue-600 text-white px-4 py-2.5 rounded-xl font-bold">重新連接並同步</button>
       </div>
     </div>
   </div>
 
   <!-- 全局提示 Toast -->
-  <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg hidden z-50"></div>
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-xl hidden z-50 border border-slate-700"></div>
 
   <script>
     // ==================== 內置 SUPABASE 設定 ====================
@@ -742,17 +869,14 @@
     let supabaseClient = null;
     let currentEditingInvoiceId = null;
 
-    // 編輯器當前圖片狀態
     let currentEditorLogoBase64 = '';
     let currentEditorChopBase64 = '';
     let currentEditorQrBase64 = '';
 
-    // 後台當前圖片狀態
     let currentAdminLogoBase64 = '';
     let currentAdminChopBase64 = '';
     let currentAdminQrBase64 = '';
 
-    // 資料快取
     let companiesData = [];
     let clientsData = [];
     let catalogItemsData = [];
@@ -771,10 +895,9 @@
       { name: '富盈工程營造有限公司', address: '九龍九龍灣常悅道9號', city_zip: 'Kowloon, Hong Kong', phone: '(852) 2345-6789', payment_info: '支票抬頭：富盈工程營造有限公司\n中國銀行戶口：012-345-6-789012-3', logo_base64: '', chop_base64: '', qr_base64: '' }
     ];
 
-    // ==================== 功能 6: PIN 密碼鎖邏輯 ====================
+    // ==================== PIN 密碼鎖邏輯 ====================
     function checkPinSession() {
-      const unlocked = sessionStorage.getItem('INV_PIN_UNLOCKED');
-      if (unlocked === 'true') {
+      if (sessionStorage.getItem('INV_PIN_UNLOCKED') === 'true') {
         document.getElementById('pin-lock-overlay').classList.add('hidden');
       }
     }
@@ -785,7 +908,7 @@
       if (input === savedPin) {
         sessionStorage.setItem('INV_PIN_UNLOCKED', 'true');
         document.getElementById('pin-lock-overlay').classList.add('hidden');
-        showToast('🔓 已解鎖進入系統');
+        showToast('🔓 歡迎回來！系統已解鎖');
       } else {
         document.getElementById('pin-error').classList.remove('hidden');
       }
@@ -829,8 +952,8 @@
       if (url && key && window.supabase) {
         try {
           supabaseClient = window.supabase.createClient(url.trim(), key.trim());
-          badge.textContent = '🟢 已連通 Supabase 雲端';
-          badge.className = 'text-xs bg-emerald-900 text-emerald-300 px-2.5 py-0.5 rounded font-medium';
+          badge.textContent = '🟢 已連通雲端';
+          badge.className = 'ml-2 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium';
         } catch (err) {
           supabaseClient = null;
         }
@@ -870,9 +993,7 @@
           if (!cliRes.error) clientsData = cliRes.data || [];
           if (!itemRes.error) catalogItemsData = itemRes.data || [];
           if (!invRes.error) invoicesHistoryData = invRes.data || [];
-        } catch (e) {
-          console.warn(e);
-        }
+        } catch (e) { console.warn(e); }
       }
 
       if (companiesData.length === 0) {
@@ -886,24 +1007,24 @@
     }
 
     function populateDropdowns() {
-      document.getElementById('select-company').innerHTML = `<option value="">-- 選擇已儲存公司 (${companiesData.length}) --</option>` +
+      document.getElementById('select-company').innerHTML = `<option value="">⚡ 快速切換開單公司 (${companiesData.length})...</option>` +
         companiesData.map(c => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
 
-      document.getElementById('select-client').innerHTML = `<option value="">-- 選擇常用客戶 (${clientsData.length}) --</option>` +
+      document.getElementById('select-client').innerHTML = `<option value="">👤 從常用客戶載入 (${clientsData.length})...</option>` +
         clientsData.map(c => `<option value="${c.id}">${escapeHtml(c.name)} ${c.company_name ? `(${escapeHtml(c.company_name)})` : ''}</option>`).join('');
 
       document.getElementById('select-catalog-item').innerHTML = `<option value="">＋ 插入常用收費項目 (${catalogItemsData.length})...</option>` +
         catalogItemsData.map(i => `<option value="${i.id}">${escapeHtml(i.description)} ($${formatCurrency(i.default_amount)})</option>`).join('');
     }
 
-    // ==================== 圖片壓縮與上傳 (Logo / 印章 / FPS QR) ====================
+    // ==================== 圖片壓縮與上傳 ====================
     function compressImageToBase64(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const maxDim = 320;
+          const maxDim = 340;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
@@ -913,7 +1034,7 @@
           canvas.height = h;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, w, h);
-          callback(canvas.toDataURL('image/png', 0.9));
+          callback(canvas.toDataURL('image/png', 0.92));
         };
         img.src = e.target.result;
       };
@@ -946,7 +1067,6 @@
       document.getElementById('editor-qr-preview').innerHTML = currentEditorQrBase64 ? `<img src="${currentEditorQrBase64}" class="max-h-full max-w-full object-contain"/>` : '無 QR';
     }
 
-    // ==================== 套用所選公司 / 客戶 / 項目 ====================
     function applySelectedCompany(compId) {
       const comp = companiesData.find(c => String(c.id) === String(compId));
       if (!comp) return;
@@ -960,7 +1080,7 @@
       currentEditorQrBase64 = comp.qr_base64 || '';
       updateEditorImagePreviews();
       renderInvoicePreview();
-      showToast(`🏢 已套用「${comp.name}」資料、收款戶口及印章`);
+      showToast(`🏢 已套用「${comp.name}」資料及印章`);
     }
 
     function applySelectedClient(clientId) {
@@ -982,18 +1102,19 @@
       addLineItem(item.description, Number(item.default_amount || 0));
     }
 
-    // ==================== 收費明細與訂金扣減計算 ====================
+    // ==================== 收費明細與訂金計算 ====================
     function renderEditorLineItems() {
       const container = document.getElementById('line-items-container');
       container.innerHTML = currentLineItems.map((item, idx) => `
-        <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+        <div class="flex items-center gap-2 bg-slate-50/90 p-2.5 rounded-xl border border-slate-200/80 hover:border-blue-300 transition">
+          <span class="text-xs font-mono font-bold text-slate-400 w-5 text-center">${idx + 1}</span>
           <input type="text" value="${escapeHtml(item.description)}" placeholder="項目說明 (Description)"
             oninput="updateLineItem(${idx}, 'description', this.value)"
-            class="flex-1 border border-slate-300 rounded px-2.5 py-1.5 text-sm bg-white" />
+            class="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:border-blue-500 outline-none" />
           <input type="number" step="0.01" value="${item.amount}" placeholder="金額"
             oninput="updateLineItem(${idx}, 'amount', this.value)"
-            class="w-28 border border-slate-300 rounded px-2.5 py-1.5 text-sm text-right bg-white font-mono" />
-          <button onclick="removeLineItem(${idx})" class="text-red-500 hover:bg-red-50 px-2 py-1 rounded text-sm font-bold">✕</button>
+            class="w-32 border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-right bg-white font-mono font-semibold focus:border-blue-500 outline-none" />
+          <button onclick="removeLineItem(${idx})" class="text-slate-400 hover:text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg text-sm font-bold transition">✕</button>
         </div>
       `).join('');
       updateTotalDisplay();
@@ -1031,10 +1152,8 @@
     }
 
     function updateTotalDisplay() {
-      const sub = calculateSubtotal();
-      const total = calculateTotal();
-      document.getElementById('editor-subtotal-display').textContent = '$' + formatCurrency(sub);
-      document.getElementById('editor-total-display').textContent = '$' + formatCurrency(total);
+      document.getElementById('editor-subtotal-display').textContent = '$' + formatCurrency(calculateSubtotal());
+      document.getElementById('editor-total-display').textContent = '$' + formatCurrency(calculateTotal());
     }
 
     function formatCurrency(val) {
@@ -1052,11 +1171,9 @@
 
     function quickConvertDocType(type) {
       document.getElementById('doc-type').value = type;
-      if (type === 'RECEIPT') {
-        document.getElementById('payment-status').value = 'PAID';
-      }
+      if (type === 'RECEIPT') document.getElementById('payment-status').value = 'PAID';
       renderInvoicePreview();
-      showToast(`已切換為 ${type}`);
+      showToast(`✨ 已切換為 ${type}`);
     }
 
     // ==================== 渲染 A4 單據預覽 ====================
@@ -1064,19 +1181,13 @@
       const docType = document.getElementById('doc-type').value || 'INVOICE';
       const payStatus = document.getElementById('payment-status').value || 'UNPAID';
 
-      // 標題與單號欄標題
       document.getElementById('inv-render-doc-title').textContent = docType;
       document.getElementById('inv-render-num-header').textContent = `${docType} #`;
 
-      // PAID 印章水印
       const paidStamp = document.getElementById('inv-render-paid-stamp');
-      if (payStatus === 'PAID' || docType === 'RECEIPT') {
-        paidStamp.classList.remove('hidden');
-      } else {
-        paidStamp.classList.add('hidden');
-      }
+      if (payStatus === 'PAID' || docType === 'RECEIPT') paidStamp.classList.remove('hidden');
+      else paidStamp.classList.add('hidden');
 
-      // Logo
       const logoBox = document.getElementById('inv-render-logo-box');
       if (currentEditorLogoBase64) {
         document.getElementById('inv-render-logo').src = currentEditorLogoBase64;
@@ -1085,18 +1196,15 @@
         logoBox.classList.add('hidden');
       }
 
-      // 公司基本資料
       document.getElementById('inv-render-comp-name').textContent = document.getElementById('comp-name').value || '[Company Name]';
       document.getElementById('inv-render-comp-address').textContent = document.getElementById('comp-address').value || '';
       document.getElementById('inv-render-comp-city').textContent = document.getElementById('comp-city').value || '';
       const phoneVal = document.getElementById('comp-phone').value;
       document.getElementById('inv-render-comp-phone').textContent = phoneVal ? `Phone: ${phoneVal}` : '';
 
-      // 編號與日期
       document.getElementById('inv-render-number').textContent = document.getElementById('inv-number').value || '';
       document.getElementById('inv-render-date').textContent = formatDateMMDDYYYY(document.getElementById('inv-date').value);
 
-      // 客戶資料
       document.getElementById('inv-render-client-name').textContent = document.getElementById('client-name').value || '';
       document.getElementById('inv-render-client-company').textContent = document.getElementById('client-company').value || '';
       document.getElementById('inv-render-client-address').textContent = document.getElementById('client-address').value || '';
@@ -1104,45 +1212,43 @@
       document.getElementById('inv-render-client-phone').textContent = document.getElementById('client-phone').value || '';
       document.getElementById('inv-render-client-email').textContent = document.getElementById('client-email').value || '';
 
-      // 項目明細
+      // 項目明細渲染
       document.getElementById('inv-render-items-body').innerHTML = currentLineItems.map(item => `
-        <tr>
-          <td class="text-left text-slate-800">${escapeHtml(item.description)}</td>
-          <td class="text-right font-mono text-slate-800">${formatCurrency(item.amount)}</td>
-        </tr>
+        <div class="inv-item-row">
+          <div class="inv-item-desc">${escapeHtml(item.description)}</div>
+          <div class="inv-item-amt">${formatCurrency(item.amount)}</div>
+        </div>
       `).join('');
 
-      // 計算小計、訂金扣減與應付結餘
       const subtotal = calculateSubtotal();
       const deposit = getDepositPaid();
       const balanceDue = calculateTotal();
-      const summaryBody = document.getElementById('inv-render-summary-rows');
+      const summaryFooter = document.getElementById('inv-render-summary-rows');
 
       if (deposit > 0) {
-        summaryBody.innerHTML = `
-          <tr class="inv-summary-row">
-            <td class="text-right font-semibold text-slate-700">SUBTOTAL (小計)</td>
-            <td class="text-right font-mono">$${formatCurrency(subtotal)}</td>
-          </tr>
-          <tr class="inv-summary-row">
-            <td class="text-right font-semibold text-red-600">LESS: DEPOSIT PAID (減已收訂金)</td>
-            <td class="text-right font-mono text-red-600">(${formatCurrency(deposit)})</td>
-          </tr>
-          <tr class="inv-total-row">
-            <td class="text-right">BALANCE DUE (應付結餘)</td>
-            <td class="text-right font-mono">$${formatCurrency(balanceDue)}</td>
-          </tr>
+        summaryFooter.innerHTML = `
+          <div class="inv-summary-line">
+            <div class="text-slate-600">SUBTOTAL (小計)</div>
+            <div>$${formatCurrency(subtotal)}</div>
+          </div>
+          <div class="inv-summary-line text-red-600">
+            <div>LESS: DEPOSIT PAID (減已收訂金)</div>
+            <div>(${formatCurrency(deposit)})</div>
+          </div>
+          <div class="inv-total-line">
+            <div>BALANCE DUE (應付結餘)</div>
+            <div>$${formatCurrency(balanceDue)}</div>
+          </div>
         `;
       } else {
-        summaryBody.innerHTML = `
-          <tr class="inv-total-row">
-            <td class="text-right">TOTAL</td>
-            <td class="text-right font-mono">$${formatCurrency(balanceDue)}</td>
-          </tr>
+        summaryFooter.innerHTML = `
+          <div class="inv-total-line">
+            <div>TOTAL</div>
+            <div>$${formatCurrency(balanceDue)}</div>
+          </div>
         `;
       }
 
-      // 底部收款資料與 FPS QR Code
       document.getElementById('inv-render-payment-info').textContent = document.getElementById('comp-payment-info').value || '';
       const qrBox = document.getElementById('inv-render-qr-box');
       if (currentEditorQrBase64) {
@@ -1152,7 +1258,6 @@
         qrBox.classList.add('hidden');
       }
 
-      // 右下角公司印章
       const chopImg = document.getElementById('inv-render-chop');
       const showChop = document.getElementById('show-chop-checkbox').checked;
       if (showChop && currentEditorChopBase64) {
@@ -1308,7 +1413,6 @@
     }
 
     function renderHistoryList() {
-      // 計算頂部統計 (只計 INVOICE 及 RECEIPT，唔計純報價單 QUOTATION)
       let totalInvoiced = 0, totalPaid = 0, totalUnpaid = 0;
       invoicesHistoryData.forEach(inv => {
         if ((inv.doc_type || 'INVOICE') !== 'QUOTATION') {
@@ -1335,7 +1439,7 @@
       });
 
       if (filtered.length === 0) {
-        box.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">暫無符合條件嘅單據紀錄</div>`;
+        box.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm">暫無符合條件嘅單據紀錄</div>`;
         return;
       }
 
@@ -1343,31 +1447,31 @@
         const dtype = inv.doc_type || 'INVOICE';
         const pstatus = inv.payment_status || 'UNPAID';
         const statusBadge = pstatus === 'PAID'
-          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','UNPAID')" class="cursor-pointer text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold">🟢 已付清</span>`
+          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','UNPAID')" class="cursor-pointer text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">🟢 已付清</span>`
           : pstatus === 'PARTIAL'
-          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">🟡 部分付款</span>`
-          : `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">🔴 未付款 (撳此標記已付)</span>`;
+          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">🟡 部分付款</span>`
+          : `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full font-bold">🔴 未付款 (點此改已付)</span>`;
 
         return `
-          <div class="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl border border-slate-200 hover:border-blue-300 bg-slate-50/60 transition">
+          <div class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border border-slate-200/90 hover:border-blue-400 bg-white shadow-sm transition">
             <div class="space-y-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">${dtype} #${escapeHtml(inv.invoice_number)}</span>
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200">${dtype} #${escapeHtml(inv.invoice_number)}</span>
                 ${statusBadge}
-                <span class="text-xs text-slate-500">${escapeHtml(inv.invoice_date)}</span>
-                <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded">${escapeHtml(inv.company_snapshot?.name || '')}</span>
+                <span class="text-xs text-slate-400 font-mono">${escapeHtml(inv.invoice_date)}</span>
+                <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">${escapeHtml(inv.company_snapshot?.name || '')}</span>
               </div>
               <div class="text-xs text-slate-600">
-                客戶：<strong>${escapeHtml(inv.client_snapshot?.name || '未填寫')}</strong> 
+                客戶：<strong class="text-slate-900">${escapeHtml(inv.client_snapshot?.name || '未填寫')}</strong> 
                 ${inv.client_snapshot?.company_name ? `(${escapeHtml(inv.client_snapshot.company_name)})` : ''}
               </div>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
-              <span class="font-bold text-slate-900 text-sm mr-2 font-mono">$${formatCurrency(inv.total_amount)}</span>
-              <button onclick="loadInvoiceForEdit('${inv.id}', false)" class="text-xs bg-white border border-slate-300 hover:bg-slate-100 px-2.5 py-1.5 rounded-lg font-medium">✏️ 編輯</button>
-              <button onclick="loadInvoiceForEdit('${inv.id}', true, 'RECEIPT')" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-2.5 py-1.5 rounded-lg font-medium">🧾 出收據</button>
-              <button onclick="loadInvoiceForEdit('${inv.id}', true)" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1.5 rounded-lg font-medium">📄 PDF / WhatsApp</button>
-              <button onclick="deleteSavedInvoice('${inv.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-lg">🗑️</button>
+              <span class="font-extrabold text-slate-900 text-base mr-2 font-mono">$${formatCurrency(inv.total_amount)}</span>
+              <button onclick="loadInvoiceForEdit('${inv.id}', false)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">✏️ 編輯</button>
+              <button onclick="loadInvoiceForEdit('${inv.id}', true, 'RECEIPT')" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-xl font-semibold">🧾 轉收據</button>
+              <button onclick="loadInvoiceForEdit('${inv.id}', true)" class="text-xs bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">📄 PDF / WhatsApp</button>
+              <button onclick="deleteSavedInvoice('${inv.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-xl">🗑️</button>
             </div>
           </div>
         `;
@@ -1383,7 +1487,7 @@
       const canvas = await html2canvas(paper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
       paper.style.transform = prevTransform;
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const imgData = canvas.toDataURL('image/jpeg', 0.96);
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -1400,7 +1504,7 @@
     }
 
     async function downloadInvoicePdf() {
-      showToast('正在生成高清 PDF...');
+      showToast('⏳ 正在生成印刷級高清 PDF...');
       await saveInvoiceToDb();
       const { pdf, fileName } = await generatePdfBlobAndFile();
       pdf.save(fileName);
@@ -1408,7 +1512,7 @@
     }
 
     async function sharePdfToWhatsApp() {
-      showToast('正在儲存並生成 PDF 準備傳送至 WhatsApp...');
+      showToast('⏳ 正在儲存並生成 PDF 準備傳送至 WhatsApp...');
       await saveInvoiceToDb();
       const { pdf, pdfFile, fileName, invNum, docType } = await generatePdfBlobAndFile();
 
@@ -1605,9 +1709,9 @@
 
     function renderAdminLists() {
       document.getElementById('admin-companies-list').innerHTML = companiesData.map(c => `
-        <div class="flex items-center justify-between p-2.5 border rounded-lg bg-white">
+        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white hover:border-blue-300 transition">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden bg-slate-50 text-[10px] text-slate-400">
+            <div class="w-11 h-11 border rounded-lg flex items-center justify-center overflow-hidden bg-slate-50 text-[10px] text-slate-400">
               ${c.logo_base64 ? `<img src="${c.logo_base64}" class="max-h-full max-w-full object-contain"/>` : '無Logo'}
             </div>
             <div>
@@ -1616,32 +1720,32 @@
             </div>
           </div>
           <div class="flex gap-1.5">
-            <button onclick="editCompanyProfile('${c.id}')" class="text-xs bg-slate-100 px-2.5 py-1 rounded">編輯</button>
-            <button onclick="deleteCompanyProfile('${c.id}')" class="text-xs text-red-500 px-2 py-1">刪除</button>
+            <button onclick="editCompanyProfile('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">編輯</button>
+            <button onclick="deleteCompanyProfile('${c.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">刪除</button>
           </div>
         </div>
       `).join('');
 
       document.getElementById('admin-clients-list').innerHTML = clientsData.map(c => `
-        <div class="flex items-center justify-between p-2.5 border rounded-lg bg-white">
+        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white hover:border-blue-300 transition">
           <div>
             <div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)} <span class="text-xs font-normal text-slate-500">${escapeHtml(c.company_name || '')}</span></div>
             <div class="text-xs text-slate-500">WhatsApp: ${escapeHtml(c.phone || '無')}</div>
           </div>
           <div class="flex gap-1.5">
-            <button onclick="editClientProfile('${c.id}')" class="text-xs bg-slate-100 px-2.5 py-1 rounded">編輯</button>
-            <button onclick="deleteClientProfile('${c.id}')" class="text-xs text-red-500 px-2 py-1">刪除</button>
+            <button onclick="editClientProfile('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">編輯</button>
+            <button onclick="deleteClientProfile('${c.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">刪除</button>
           </div>
         </div>
       `).join('');
 
       document.getElementById('admin-items-list').innerHTML = catalogItemsData.map(i => `
-        <div class="flex items-center justify-between p-2.5 border rounded-lg bg-white">
+        <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white hover:border-blue-300 transition">
           <div class="text-sm font-medium text-slate-800">${escapeHtml(i.description)}</div>
           <div class="flex items-center gap-3">
             <span class="font-mono text-sm font-bold text-blue-700">$${formatCurrency(i.default_amount)}</span>
-            <button onclick="editCatalogItem('${i.id}')" class="text-xs bg-slate-100 px-2.5 py-1 rounded">編輯</button>
-            <button onclick="deleteCatalogItem('${i.id}')" class="text-xs text-red-500 px-2 py-1">刪除</button>
+            <button onclick="editCatalogItem('${i.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">編輯</button>
+            <button onclick="deleteCatalogItem('${i.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">刪除</button>
           </div>
         </div>
       `).join('');
@@ -1650,10 +1754,10 @@
     function switchTab(tab) {
       ['editor', 'preview', 'history', 'admin'].forEach(t => {
         document.getElementById(`view-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).className = 'flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap';
+        document.getElementById(`tab-${t}`).className = 'flex-1 py-2.5 px-3 text-center font-medium text-slate-400 hover:text-white whitespace-nowrap transition';
       });
       document.getElementById(`view-${tab}`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}`).className = 'flex-1 py-2.5 px-3 text-center font-semibold border-b-2 border-blue-400 text-blue-400 whitespace-nowrap';
+      document.getElementById(`tab-${tab}`).className = 'flex-1 py-2.5 px-3 text-center font-bold border-b-2 border-blue-400 text-blue-400 whitespace-nowrap transition';
 
       if (tab === 'preview') {
         renderInvoicePreview();
@@ -1671,7 +1775,7 @@
         const scale = availableWidth / paperWidth;
         paper.style.transform = `scale(${scale})`;
         paper.style.transformOrigin = 'top center';
-        wrapper.style.height = `${paper.offsetHeight * scale + 20}px`;
+        wrapper.style.height = `${paper.offsetHeight * scale + 24}px`;
       } else {
         paper.style.transform = 'scale(1)';
         wrapper.style.height = 'auto';
