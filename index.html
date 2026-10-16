@@ -22,14 +22,12 @@
       background-color: #f1f5f9;
       color: #0f172a;
     }
-
     .ui-card {
       background: #ffffff;
       border-radius: 18px;
       border: 1px solid rgba(203, 213, 225, 0.8);
       box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
     }
-
     .ui-input {
       width: 100%;
       border: 1px solid #cbd5e1;
@@ -46,17 +44,14 @@
       box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
       outline: none;
     }
-
     .ui-label {
       display: block;
       font-size: 11.5px;
       font-weight: 600;
       color: #334155;
       margin-bottom: 5px;
-      letter-spacing: 0.01em;
     }
-
-    /* ==================== 方案二：現代工程藍綠專業 A4 發票佈局 ==================== */
+    /* ==================== A4 專業發票渲染佈局 ==================== */
     .invoice-paper {
       width: 794px;
       min-height: 1122px;
@@ -72,7 +67,6 @@
       justify-content: space-between;
       border-radius: 2px;
     }
-
     .inv-title {
       color: #1e3a8a;
       font-size: 40px;
@@ -83,7 +77,6 @@
       margin-bottom: 16px;
       text-transform: uppercase;
     }
-
     .inv-header-table {
       width: 330px;
       border-collapse: collapse;
@@ -94,7 +87,6 @@
       background-color: #e0f2fe;
       color: #1e3a8a;
       font-weight: 700;
-      letter-spacing: 0.6px;
       padding: 6px 12px;
       border: 1px solid #64748b;
       text-align: center;
@@ -109,20 +101,17 @@
       font-weight: 600;
       font-size: 12.5px;
     }
-
     .inv-billto-header {
       background-color: #e0f2fe;
       border: 1px solid #64748b;
       color: #1e3a8a;
       font-weight: 700;
       font-size: 12px;
-      letter-spacing: 0.6px;
       padding: 6px 12px;
       width: 260px;
       margin-top: 26px;
       margin-bottom: 8px;
     }
-
     .inv-items-box {
       margin-top: 22px;
       border: 1px solid #64748b;
@@ -130,27 +119,16 @@
       flex-direction: column;
       min-height: 500px;
     }
-
     .inv-items-header {
       display: flex;
       background-color: #e0f2fe;
       border-bottom: 1px solid #64748b;
       font-weight: 700;
       font-size: 12px;
-      letter-spacing: 0.6px;
       color: #1e3a8a;
     }
-    .inv-items-header > div:first-child {
-      width: 76%;
-      padding: 7px 14px;
-      border-right: 1px solid #64748b;
-    }
-    .inv-items-header > div:last-child {
-      width: 24%;
-      padding: 7px 14px;
-      text-align: right;
-    }
-
+    .inv-items-header > div:first-child { width: 76%; padding: 7px 14px; border-right: 1px solid #64748b; }
+    .inv-items-header > div:last-child { width: 24%; padding: 7px 14px; text-align: right; }
     .inv-items-body {
       flex: 1;
       display: flex;
@@ -160,110 +138,27 @@
       padding-top: 8px;
       padding-bottom: 16px;
     }
-
-    .inv-item-row {
-      display: flex;
-      font-size: 13px;
-      line-height: 1.5;
-      color: #1e293b;
-    }
-    .inv-item-desc {
-      width: 76%;
-      padding: 5px 14px;
-      word-break: break-word;
-    }
-    .inv-item-amt {
-      width: 24%;
-      padding: 5px 14px;
-      text-align: right;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-    }
-
-    .inv-summary-footer {
-      border-top: 1px solid #64748b;
-    }
-    .inv-summary-line {
-      display: flex;
-      border-bottom: 1px solid #cbd5e1;
-      font-size: 12.5px;
-      background-color: #f8fafc;
-    }
-    .inv-summary-line > div:first-child {
-      width: 76%;
-      padding: 6px 14px;
-      text-align: right;
-      font-weight: 600;
-      border-right: 1px solid #64748b;
-    }
-    .inv-summary-line > div:last-child {
-      width: 24%;
-      padding: 6px 14px;
-      text-align: right;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 600;
-    }
-
-    .inv-total-line {
-      display: flex;
-      background-color: #e0f2fe;
-      font-size: 14.5px;
-      font-weight: 800;
-      color: #1e3a8a;
-    }
-    .inv-total-line > div:first-child {
-      width: 76%;
-      padding: 9px 14px;
-      text-align: right;
-      letter-spacing: 0.5px;
-      border-right: 1px solid #64748b;
-    }
-    .inv-total-line > div:last-child {
-      width: 24%;
-      padding: 9px 14px;
-      text-align: right;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
+    .inv-item-row { display: flex; font-size: 13px; line-height: 1.5; color: #1e293b; }
+    .inv-item-desc { width: 76%; padding: 5px 14px; word-break: break-word; }
+    .inv-item-amt { width: 24%; padding: 5px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .inv-summary-footer { border-top: 1px solid #64748b; }
+    .inv-summary-line { display: flex; border-bottom: 1px solid #cbd5e1; font-size: 12.5px; background-color: #f8fafc; }
+    .inv-summary-line > div:first-child { width: 76%; padding: 6px 14px; text-align: right; font-weight: 600; border-right: 1px solid #64748b; }
+    .inv-summary-line > div:last-child { width: 24%; padding: 6px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .inv-total-line { display: flex; background-color: #e0f2fe; font-size: 14.5px; font-weight: 800; color: #1e3a8a; }
+    .inv-total-line > div:first-child { width: 76%; padding: 9px 14px; text-align: right; border-right: 1px solid #64748b; }
+    .inv-total-line > div:last-child { width: 24%; padding: 9px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; }
     .paid-stamp {
-      position: absolute;
-      top: 40%;
-      right: 11%;
-      border: 4px solid rgba(5, 150, 105, 0.8);
-      outline: 2px solid rgba(5, 150, 105, 0.8);
-      outline-offset: -7px;
-      color: rgba(5, 150, 105, 0.85);
-      font-size: 44px;
-      font-weight: 900;
-      padding: 8px 28px;
-      border-radius: 8px;
-      transform: rotate(-14deg);
-      letter-spacing: 5px;
-      pointer-events: none;
-      text-transform: uppercase;
-      z-index: 20;
-      background-color: rgba(255, 255, 255, 0.15);
+      position: absolute; top: 40%; right: 11%;
+      border: 4px solid rgba(5, 150, 105, 0.8); outline: 2px solid rgba(5, 150, 105, 0.8); outline-offset: -7px;
+      color: rgba(5, 150, 105, 0.85); font-size: 44px; font-weight: 900; padding: 8px 28px; border-radius: 8px;
+      transform: rotate(-14deg); letter-spacing: 5px; pointer-events: none; text-transform: uppercase; z-index: 20; background-color: rgba(255, 255, 255, 0.15);
     }
-
-    .preview-scale-wrapper {
-      width: 100%;
-      overflow-x: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
+    .preview-scale-wrapper { width: 100%; overflow-x: hidden; display: flex; justify-content: center; align-items: flex-start; }
     @media print {
       body * { visibility: hidden; }
       #invoice-print-area, #invoice-print-area * { visibility: visible; }
-      #invoice-print-area {
-        position: fixed;
-        left: 0;
-        top: 0;
-        width: 100%;
-        box-shadow: none !important;
-        transform: scale(1) !important;
-      }
+      #invoice-print-area { position: fixed; left: 0; top: 0; width: 100%; box-shadow: none !important; transform: scale(1) !important; }
     }
   </style>
 </head>
@@ -277,7 +172,7 @@
         <h2 class="text-lg font-extrabold text-slate-900">INVOICE PRO</h2>
         <p class="text-xs text-slate-500 mt-0.5">預設解鎖密碼：<span class="font-mono font-bold text-emerald-600">1668</span></p>
       </div>
-      <input type="password" id="pin-input" value="1668" inputmode="numeric" placeholder="••••" 
+      <input type="password" id="pin-input" inputmode="numeric" placeholder="請輸入密碼" 
         onkeydown="if(event.key==='Enter') verifyPin()"
         class="w-full border-2 border-slate-200 bg-slate-50 rounded-2xl px-4 py-3 text-center text-xl font-bold tracking-[0.4em] focus:border-emerald-600 focus:bg-white outline-none transition" />
       <p id="pin-error" class="text-xs text-red-500 font-medium hidden">❌ 密碼不正確，請重試（預設 1668）</p>
@@ -287,472 +182,6 @@
     </div>
   </div>
 
-  <!-- ==================== 頂部導航欄 ==================== -->
+  <!-- 頂部導航欄 -->
   <header class="bg-blue-950 text-white sticky top-0 z-40 shadow-xl border-b border-blue-900">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center font-black text-sm shadow">IP</div>
-        <div>
-          <span class="text-base font-extrabold tracking-tight text-white">INVOICE <span class="text-emerald-400">PRO</span></span>
-          <span class="ml-2 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium" id="db-status-badge">🟢 已連通雲端</span>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button onclick="changePinCode()" class="text-xs bg-blue-900 hover:bg-blue-800 border border-blue-800 px-2.5 py-1.5 rounded-xl text-slate-200 transition">
-          🔑 密碼
-        </button>
-        <button onclick="openDbModal()" class="text-xs bg-blue-900 hover:bg-blue-800 border border-blue-800 px-3 py-1.5 rounded-xl font-medium transition">
-          ⚙️ 雲端設定
-        </button>
-      </div>
-    </div>
-
-    <!-- 主功能切換 Tab -->
-    <div class="max-w-5xl mx-auto px-3 flex gap-1 text-xs sm:text-sm overflow-x-auto bg-blue-950/80">
-      <button onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">
-        ✏️ 開立/編輯單據
-      </button>
-      <button onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-2.5 px-3 text-center font-bold border-b-2 border-emerald-400 text-emerald-400 whitespace-nowrap transition">
-        📄 A4 預覽及傳送
-      </button>
-      <button onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">
-        🗂️ 單據紀錄及追數
-      </button>
-      <button onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">
-        🛠️ 後台資料管理
-      </button>
-    </div>
-  </header>
-
-  <!-- ==================== 主內容區 ==================== -->
-  <main class="max-w-5xl mx-auto p-3.5 sm:p-6">
-
-    <!-- ==================== TAB 1: 開立/編輯單據 ==================== -->
-    <section id="view-editor" class="hidden space-y-5">
-      <div class="ui-card p-4 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-white to-emerald-50/40">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span class="text-xs text-slate-500 font-medium">當前狀態：</span>
-          <span id="current-edit-status" class="text-sm font-extrabold text-slate-800">新單據草稿</span>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-semibold transition">
-            ➕ 開新空白單
-          </button>
-          <button onclick="saveInvoiceToDb()" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">
-            💾 儲存單據至雲端
-          </button>
-        </div>
-      </div>
-
-      <div class="ui-card p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-blue-100 text-blue-900 flex items-center justify-center text-sm font-bold">1</span>
-            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">單據屬性及開單公司</h2>
-          </div>
-          <select id="select-company" onchange="applySelectedCompany(this.value)" class="text-xs border border-blue-300 bg-blue-50/80 hover:bg-blue-100 text-blue-900 rounded-xl px-3 py-2 font-bold outline-none transition cursor-pointer">
-            <option value="">⚡ 快速切換開單公司...</option>
-          </select>
-        </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-          <div>
-            <label class="ui-label text-blue-900 font-bold">📑 單據類型</label>
-            <select id="doc-type" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
-              <option value="QUOTATION">QUOTATION (報價單)</option>
-              <option value="INVOICE" selected>INVOICE (發票)</option>
-              <option value="RECEIPT">RECEIPT (正式收據)</option>
-            </select>
-          </div>
-          <div>
-            <label class="ui-label">💰 找數狀態</label>
-            <select id="payment-status" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
-              <option value="UNPAID">🔴 未付款 (Unpaid)</option>
-              <option value="PARTIAL">🟡 部分付款 (Partial)</option>
-              <option value="PAID">🟢 已付清 (蓋 PAID 印)</option>
-            </select>
-          </div>
-          <div>
-            <label class="ui-label">單據編號 (#)</label>
-            <input type="text" id="inv-number" value="23" oninput="renderInvoicePreview()" class="ui-input font-mono font-bold !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">單據日期 (DATE)</label>
-            <input type="date" id="inv-date" onchange="renderInvoicePreview()" class="ui-input !bg-white" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-logo-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 Logo</div>
-            <div class="flex-1 min-w-0">
-              <label class="block text-xs font-bold text-slate-700 mb-1">公司 Logo</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[11px] w-full text-slate-500" />
-              <button onclick="clearEditorImage('logo')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-chop-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無印章</div>
-            <div class="flex-1 min-w-0">
-              <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1 cursor-pointer">
-                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" />
-                蓋公司印章/簽名
-              </label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[11px] w-full text-slate-500" />
-              <button onclick="clearEditorImage('chop')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-qr-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 QR</div>
-            <div class="flex-1 min-w-0">
-              <label class="block text-xs font-bold text-slate-700 mb-1">FPS 收款 QR Code</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[11px] w-full text-slate-500" />
-              <button onclick="clearEditorImage('qr')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-          <div>
-            <label class="ui-label">公司名稱 (Company Name)</label>
-            <input type="text" id="comp-name" value="臻藝設計工程有限公司" oninput="renderInvoicePreview()" class="ui-input font-semibold" />
-          </div>
-          <div>
-            <label class="ui-label">聯絡電話 (Phone)</label>
-            <input type="text" id="comp-phone" value="(852) 2888-9999" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div>
-            <label class="ui-label">街道地址 (Street Address)</label>
-            <input type="text" id="comp-address" value="香港九龍觀塘鴻圖道88號" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div>
-            <label class="ui-label">地區 / 城市 (City, ST ZIP)</label>
-            <input type="text" id="comp-city" value="Kowloon, Hong Kong" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div class="sm:col-span-2">
-            <label class="ui-label">🏦 收款銀行戶口 / 支票抬頭 / 轉數快 FPS 備註</label>
-            <textarea id="comp-payment-info" rows="2" oninput="renderInvoicePreview()" class="ui-input text-xs leading-relaxed">支票抬頭：臻藝設計工程有限公司
-銀行戶口 (恒生)：288-123456-883 | 轉數快 FPS 電話：9123 4567</textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="ui-card p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-sm font-bold">2</span>
-            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">客戶資料 (BILL TO)</h2>
-          </div>
-          <select id="select-client" onchange="applySelectedClient(this.value)" class="text-xs border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 rounded-xl px-3 py-2 font-bold outline-none transition cursor-pointer">
-            <option value="">👤 從常用客戶載入...</option>
-          </select>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div>
-            <label class="ui-label">客戶/聯絡人姓名 (Name)</label>
-            <input type="text" id="client-name" value="Jessica Wili" oninput="renderInvoicePreview()" class="ui-input font-semibold" />
-          </div>
-          <div>
-            <label class="ui-label">客戶公司名稱 (Company Name)</label>
-            <input type="text" id="client-company" value="ABC Properties Ltd." oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div>
-            <label class="ui-label">工程/街道地址 (Street Address)</label>
-            <input type="text" id="client-address" value="8 De Yun Road" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div>
-            <label class="ui-label">地區 (City, ST ZIP)</label>
-            <input type="text" id="client-city" value="Kowloon, HK" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-          <div>
-            <label class="ui-label">WhatsApp 電話 (連區號如 85291234567)</label>
-            <input type="text" id="client-phone" value="85291234567" oninput="renderInvoicePreview()" class="ui-input font-mono" />
-          </div>
-          <div>
-            <label class="ui-label">電郵地址 (Email Address)</label>
-            <input type="email" id="client-email" value="jessica@example.com" oninput="renderInvoicePreview()" class="ui-input" />
-          </div>
-        </div>
-      </div>
-
-      <div class="ui-card p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <span class="w-7 h-7 rounded-lg bg-teal-100 text-teal-900 flex items-center justify-center text-sm font-bold">3</span>
-            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">工程及收費項目明細 (支援負數折扣)</h2>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <select id="select-catalog-item" onchange="addCatalogItemToInvoice(this.value); this.value='';" class="text-xs border border-teal-300 bg-teal-50 text-teal-900 rounded-xl px-3 py-2 font-bold outline-none cursor-pointer">
-              <option value="">＋ 插入常用收費項目...</option>
-            </select>
-            <button onclick="addLineItem('', 0)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl font-bold shadow-sm transition">
-              ＋ 新增項目行
-            </button>
-          </div>
-        </div>
-
-        <div id="line-items-container" class="space-y-2.5"></div>
-
-        <div class="pt-4 border-t border-slate-100 space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-          <div class="flex justify-between items-center text-sm text-slate-600">
-            <span class="font-medium">項目小計 (SUBTOTAL)：</span>
-            <span id="editor-subtotal-display" class="font-mono font-bold text-slate-800">$0.00</span>
-          </div>
-          <div class="flex flex-wrap justify-between items-center gap-2 text-sm text-slate-700">
-            <label for="deposit-paid-input" class="font-semibold text-emerald-700">➖ 減：已收訂金 / 上期工程款 (LESS DEPOSIT PAID)：</label>
-            <input type="number" step="0.01" id="deposit-paid-input" value="0" oninput="updateTotalDisplay(); renderInvoicePreview();" 
-              class="w-36 border border-slate-300 rounded-xl px-3 py-1.5 text-right font-mono text-sm bg-white font-bold text-emerald-700 focus:border-emerald-600 outline-none" />
-          </div>
-          <div class="flex justify-between items-center text-base font-extrabold text-slate-900 pt-2.5 border-t border-slate-200">
-            <span>今期應付結餘 (BALANCE DUE / TOTAL)：</span>
-            <span id="editor-total-display" class="text-2xl text-blue-900 font-mono">$0.00</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 2: A4 預覽、PDF 及 WhatsApp 傳送 ==================== -->
-    <section id="view-preview" class="space-y-4">
-      <div class="ui-card p-4 space-y-3.5">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h3 class="font-extrabold text-slate-800 text-sm">🚀 單據輸出與一鍵 WhatsApp 傳送</h3>
-            <p class="text-[11px] text-slate-500">右上角可快速轉換單據性質，手機撳綠色掣即可連同 PDF 發送給客人</p>
-          </div>
-          <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
-            <button onclick="quickConvertDocType('QUOTATION')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-slate-700 transition">報價單</button>
-            <button onclick="quickConvertDocType('INVOICE')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-blue-900 transition">發票 Invoice</button>
-            <button onclick="quickConvertDocType('RECEIPT')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-emerald-700 transition">正式收據(PAID)</button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <button onclick="sharePdfToWhatsApp()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-emerald-600/20 transition text-sm">
-            <span>📲 生成 PDF 直送 WhatsApp</span>
-          </button>
-          <button onclick="downloadInvoicePdf()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-blue-900/20 transition text-sm">
-            <span>📥 下載高清 A4 PDF</span>
-          </button>
-          <button onclick="saveAndPrint()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm">
-            <span>🖨️ 儲存並直接列印</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- ==================== A4 專業發票渲染區 ==================== -->
-      <div id="preview-wrapper" class="preview-scale-wrapper py-2">
-        <div id="invoice-print-area" class="invoice-paper">
-          <div id="inv-render-paid-stamp" class="paid-stamp hidden">PAID</div>
-
-          <div>
-            <div class="flex justify-between items-start">
-              <div class="max-w-[54%]">
-                <div id="inv-render-logo-box" class="mb-3 hidden">
-                  <img id="inv-render-logo" src="" alt="Company Logo" class="max-h-20 object-contain" />
-                </div>
-                <div id="inv-render-comp-name" class="text-[23px] font-bold text-slate-900 mb-1.5 leading-snug tracking-tight">
-                  臻藝設計工程有限公司
-                </div>
-                <div class="text-[12.5px] leading-[1.55] text-slate-700 space-y-0.5">
-                  <div id="inv-render-comp-address">香港九龍觀塘鴻圖道88號</div>
-                  <div id="inv-render-comp-city">Kowloon, Hong Kong</div>
-                  <div id="inv-render-comp-phone" class="font-medium text-slate-800">Phone: (852) 2888-9999</div>
-                </div>
-              </div>
-
-              <div class="text-right">
-                <div id="inv-render-doc-title" class="inv-title">INVOICE</div>
-                <table class="inv-header-table">
-                  <thead>
-                    <tr>
-                      <th id="inv-render-num-header">INVOICE #</th>
-                      <th>DATE</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td id="inv-render-number">23</td>
-                      <td id="inv-render-date">10/16/2026</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div>
-              <div class="inv-billto-header">BILL TO</div>
-              <div class="text-[12.5px] leading-[1.55] text-slate-800 pl-1.5 space-y-0.5">
-                <div id="inv-render-client-name" class="font-bold text-[13.5px] text-slate-900">Jessica Wili</div>
-                <div id="inv-render-client-company" class="font-medium">ABC Properties Ltd.</div>
-                <div id="inv-render-client-address">8 De Yun Road</div>
-                <div id="inv-render-client-city">Kowloon, HK</div>
-                <div id="inv-render-client-phone">85291234567</div>
-                <div id="inv-render-client-email" class="text-slate-600">jessica@example.com</div>
-              </div>
-            </div>
-
-            <div class="inv-items-box">
-              <div class="inv-items-header">
-                <div>DESCRIPTION</div>
-                <div>AMOUNT</div>
-              </div>
-              <div id="inv-render-items-body" class="inv-items-body"></div>
-              <div id="inv-render-summary-rows" class="inv-summary-footer"></div>
-            </div>
-          </div>
-
-          <div class="mt-6 pt-4 border-t border-slate-300 flex justify-between items-end">
-            <div class="flex items-center gap-4 max-w-[62%]">
-              <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1.5 rounded-lg bg-white shadow-sm">
-                <img id="inv-render-qr" src="" alt="Payment QR" class="w-20 h-20 object-contain" />
-                <div class="text-[9px] font-bold text-center text-slate-500 mt-0.5">FPS / Scan to Pay</div>
-              </div>
-              <div class="text-[11.5px] leading-[1.55] text-slate-700">
-                <div class="font-bold text-slate-900 mb-0.5 tracking-wide">PAYMENT DETAILS / 收款辦法：</div>
-                <div id="inv-render-payment-info" class="whitespace-pre-line"></div>
-              </div>
-            </div>
-
-            <div class="w-52 text-center">
-              <div class="h-24 flex items-center justify-center relative">
-                <img id="inv-render-chop" src="" alt="Company Chop" class="max-h-24 max-w-full object-contain hidden" />
-              </div>
-              <div class="border-t border-slate-500 pt-1.5 text-[11px] font-semibold text-slate-700 tracking-wide">
-                Authorized Signature & Company Chop
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 3: 單據紀錄庫及未收帳統計 ==================== -->
-    <section id="view-history" class="hidden space-y-4">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div class="ui-card p-4 border-l-4 border-l-blue-900">
-          <div class="text-xs font-semibold text-slate-500">已開立發票/收據總額</div>
-          <div id="stat-total-invoiced" class="text-2xl font-extrabold font-mono text-slate-900 mt-1">$0.00</div>
-        </div>
-        <div class="ui-card p-4 border-l-4 border-l-emerald-600">
-          <div class="text-xs font-semibold text-emerald-600">🟢 已收清款項 (Paid)</div>
-          <div id="stat-total-paid" class="text-2xl font-extrabold font-mono text-emerald-700 mt-1">$0.00</div>
-        </div>
-        <div class="ui-card p-4 border-l-4 border-l-red-500">
-          <div class="text-xs font-semibold text-red-600">🔴 尚欠未收總額 (Outstanding)</div>
-          <div id="stat-total-unpaid" class="text-2xl font-extrabold font-mono text-red-600 mt-1">$0.00</div>
-        </div>
-      </div>
-
-      <div class="ui-card p-5">
-        <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
-          <h2 class="font-extrabold text-slate-800 text-base">🗂️ 歷史單據紀錄庫</h2>
-          <div class="flex flex-wrap gap-2">
-            <select id="history-filter-status" onchange="renderHistoryList()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold bg-white">
-              <option value="ALL">全部狀態</option>
-              <option value="UNPAID">🔴 只看未付款</option>
-              <option value="PARTIAL">🟡 只看部分付款</option>
-              <option value="PAID">🟢 只看已付清</option>
-            </select>
-            <input type="text" id="history-search" oninput="renderHistoryList()" placeholder="🔍 搜尋單號或客戶..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-white" />
-            <button onclick="loadAllData()" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">🔄 刷新</button>
-          </div>
-        </div>
-
-        <div id="history-list-container" class="space-y-2.5"></div>
-      </div>
-    </section>
-
-    <!-- ==================== TAB 4: 後台資料管理 ==================== -->
-    <section id="view-admin" class="hidden space-y-6">
-      <div class="ui-card p-5 space-y-4">
-        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏢 1. 開單公司資料、收款戶口及印章管理</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
-          <input type="hidden" id="admin-comp-id" />
-          <div>
-            <label class="ui-label">公司名稱 *</label>
-            <input type="text" id="admin-comp-name" placeholder="例如：臻藝設計工程有限公司" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">電話</label>
-            <input type="text" id="admin-comp-phone" placeholder="例如：(852) 2888-9999" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">街道地址</label>
-            <input type="text" id="admin-comp-address" placeholder="室、樓層、大廈、街道" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">地區 / 城市</label>
-            <input type="text" id="admin-comp-city" placeholder="Kowloon, Hong Kong" class="ui-input !bg-white" />
-          </div>
-          <div class="sm:col-span-2">
-            <label class="ui-label">🏦 預設收款銀行戶口 / 支票抬頭 / FPS 資料</label>
-            <textarea id="admin-comp-payment" rows="2" placeholder="支票抬頭：XXX | 銀行戶口：XXX | FPS ID：XXX" class="ui-input !bg-white text-xs"></textarea>
-          </div>
-
-          <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-logo-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 Logo</div>
-              <div class="flex-1 min-w-0">
-                <label class="block text-[11px] font-bold text-slate-700">公司 Logo</label>
-                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[11px] w-full" />
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-chop-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無印章</div>
-              <div class="flex-1 min-w-0">
-                <label class="block text-[11px] font-bold text-slate-700">公司印章/簽名</label>
-                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[11px] w-full" />
-              </div>
-            </div>
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-qr-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 QR</div>
-              <div class="flex-1 min-w-0">
-                <label class="block text-[11px] font-bold text-slate-700">FPS 收款 QR</label>
-                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[11px] w-full" />
-              </div>
-            </div>
-          </div>
-
-          <div class="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <button onclick="resetAdminCompanyForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
-            <button onclick="saveCompanyProfile()" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存公司資料</button>
-          </div>
-        </div>
-        <div id="admin-companies-list" class="space-y-2"></div>
-      </div>
-
-      <div class="ui-card p-5 space-y-4">
-        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">👥 2. 常用客戶資料管理</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
-          <input type="hidden" id="admin-client-id" />
-          <div>
-            <label class="ui-label">客戶/聯絡人姓名 *</label>
-            <input type="text" id="admin-client-name" placeholder="Jessica Wili" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">客戶公司名稱</label>
-            <input type="text" id="admin-client-company" placeholder="ABC Company Ltd" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">WhatsApp 電話 (連區號 852)</label>
-            <input type="text" id="admin-client-phone" placeholder="85291234567" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">街道地址</label>
-            <input type="text" id="admin-client-address" placeholder="街道及門牌" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">地區</label>
-            <input type="text" id="admin-client-city" placeholder="Hong Kong" class="ui-input !bg-white" />
-          </div>
-          <div>
-            <label class="ui-label">Email</label>
-            <input type="email" id="admin-client-email" placeholder="client@email.com" class="ui-input !bg-white" />
-          </div>
-          <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-            <button onclick="resetAdminClientForm()" class
+    <div class="max
