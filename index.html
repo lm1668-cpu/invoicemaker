@@ -4,11 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>INVOICE PRO — 工程及室內設計單據系統</title>
+  <!-- Google Fonts: Inter, JetBrains Mono & Noto Sans HK -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- html2canvas & jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -17,12 +21,18 @@
       font-family: 'Inter', 'Noto Sans HK', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: #f1f5f9;
       color: #0f172a;
+      -webkit-tap-highlight-color: transparent;
     }
     .ui-card {
       background: #ffffff;
       border-radius: 18px;
-      border: 1px solid rgba(203, 213, 225, 0.8);
+      border: 1px solid rgba(203, 213, 225, 0.85);
       box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+      transition: all 0.2s ease;
+    }
+    .ui-card-editing {
+      border: 2px solid #059669 !important;
+      box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.12) !important;
     }
     .ui-input {
       width: 100%;
@@ -47,14 +57,15 @@
       color: #334155;
       margin-bottom: 5px;
     }
-    /* ==================== A4 專業發票渲染佈局 ==================== */
+
+    /* ==================== A4 專業發票印刷級渲染佈局 ==================== */
     .invoice-paper {
       width: 794px;
       min-height: 1122px;
       background: #ffffff;
       color: #1e293b;
       font-family: 'Inter', 'Noto Sans HK', Arial, sans-serif;
-      padding: 44px 50px 38px 50px;
+      padding: 42px 48px 36px 48px;
       box-sizing: border-box;
       position: relative;
       box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
@@ -65,16 +76,16 @@
     }
     .inv-title {
       color: #1e3a8a;
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 800;
       letter-spacing: 2.5px;
       text-align: right;
       line-height: 1;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       text-transform: uppercase;
     }
     .inv-header-table {
-      width: 330px;
+      width: 310px;
       border-collapse: collapse;
       margin-left: auto;
       font-size: 12px;
@@ -83,13 +94,13 @@
       background-color: #e0f2fe;
       color: #1e3a8a;
       font-weight: 700;
-      padding: 5px 12px;
+      padding: 5px 10px;
       border: 1px solid #64748b;
       text-align: center;
       width: 50%;
     }
     .inv-header-table td {
-      padding: 5px 12px;
+      padding: 5px 10px;
       border: 1px solid #64748b;
       text-align: center;
       color: #0f172a;
@@ -102,25 +113,28 @@
       border: 1px solid #64748b;
       color: #1e3a8a;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11.5px;
+      letter-spacing: 0.5px;
       padding: 5px 12px;
       width: 260px;
-      margin-top: 20px;
+      margin-top: 16px;
       margin-bottom: 6px;
     }
     .inv-items-box {
-      margin-top: 18px;
+      margin-top: 14px;
       border: 1px solid #64748b;
       display: flex;
       flex-direction: column;
-      min-height: 360px;
+      flex: 1;
+      min-height: 320px;
     }
     .inv-items-header {
       display: flex;
       background-color: #e0f2fe;
       border-bottom: 1px solid #64748b;
       font-weight: 700;
-      font-size: 12px;
+      font-size: 11.5px;
+      letter-spacing: 0.5px;
       color: #1e3a8a;
     }
     .inv-items-header > div:first-child { width: 76%; padding: 6px 14px; border-right: 1px solid #64748b; }
@@ -132,29 +146,31 @@
       position: relative;
       background: linear-gradient(to right, transparent calc(76% - 1px), #64748b calc(76% - 1px), #64748b 76%, transparent 76%);
       padding-top: 8px;
-      padding-bottom: 14px;
+      padding-bottom: 12px;
     }
-    .inv-item-row { display: flex; font-size: 12.5px; line-height: 1.5; color: #1e293b; }
-    .inv-item-desc { width: 76%; padding: 4px 14px; word-break: break-word; }
+    .inv-item-row { display: flex; font-size: 12.5px; line-height: 1.48; color: #1e293b; }
+    .inv-item-desc { width: 76%; padding: 4px 14px; word-break: break-word; white-space: pre-wrap; }
     .inv-item-amt { width: 24%; padding: 4px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
     .inv-summary-footer { border-top: 1px solid #64748b; }
     .inv-summary-line { display: flex; border-bottom: 1px solid #cbd5e1; font-size: 12px; background-color: #f8fafc; }
     .inv-summary-line > div:first-child { width: 76%; padding: 5px 14px; text-align: right; font-weight: 600; border-right: 1px solid #64748b; }
     .inv-summary-line > div:last-child { width: 24%; padding: 5px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
     .inv-total-line { display: flex; background-color: #e0f2fe; font-size: 14px; font-weight: 800; color: #1e3a8a; }
-    .inv-total-line > div:first-child { width: 76%; padding: 8px 14px; text-align: right; border-right: 1px solid #64748b; }
-    .inv-total-line > div:last-child { width: 24%; padding: 8px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; }
+    .inv-total-line > div:first-child { width: 76%; padding: 7px 14px; text-align: right; border-right: 1px solid #64748b; }
+    .inv-total-line > div:last-child { width: 24%; padding: 7px 14px; text-align: right; font-family: 'JetBrains Mono', monospace; }
     .paid-stamp {
-      position: absolute; top: 36%; right: 11%;
-      border: 4px solid rgba(5, 150, 105, 0.8); outline: 2px solid rgba(5, 150, 105, 0.8); outline-offset: -7px;
-      color: rgba(5, 150, 105, 0.85); font-size: 44px; font-weight: 900; padding: 8px 28px; border-radius: 8px;
+      position: absolute; top: 38%; right: 11%;
+      border: 4px solid rgba(5, 150, 105, 0.82); outline: 2px solid rgba(5, 150, 105, 0.82); outline-offset: -7px;
+      color: rgba(5, 150, 105, 0.85); font-size: 42px; font-weight: 900; padding: 6px 26px; border-radius: 8px;
       transform: rotate(-14deg); letter-spacing: 5px; pointer-events: none; text-transform: uppercase; z-index: 20; background-color: rgba(255, 255, 255, 0.15);
     }
     .preview-scale-wrapper { width: 100%; overflow-x: hidden; display: flex; justify-content: center; align-items: flex-start; }
+
     @media print {
+      @page { size: A4 portrait; margin: 0; }
       body * { visibility: hidden; }
       #invoice-print-area, #invoice-print-area * { visibility: visible; }
-      #invoice-print-area { position: fixed; left: 0; top: 0; width: 100%; box-shadow: none !important; transform: scale(1) !important; }
+      #invoice-print-area { position: fixed; left: 0; top: 0; width: 210mm; min-height: 297mm; box-shadow: none !important; transform: scale(1) !important; }
     }
   </style>
 </head>
@@ -163,7 +179,7 @@
   <!-- ==================== PIN 密碼鎖保護層 ==================== -->
   <div id="pin-lock-overlay" style="display: flex;" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-xs w-full p-7 text-center space-y-4 shadow-2xl border border-slate-100">
-      <div class="w-14 h-14 bg-gradient-to-br from-blue-700 to-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg shadow-blue-500/30">🔒</div>
+      <div class="w-14 h-14 bg-gradient-to-br from-blue-800 to-emerald-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg shadow-emerald-600/20">🔒</div>
       <div>
         <h2 class="text-lg font-extrabold text-slate-900">INVOICE PRO</h2>
         <p class="text-xs text-slate-500 mt-0.5">預設解鎖密碼：<span class="font-mono font-bold text-emerald-600">1668</span></p>
@@ -178,46 +194,58 @@
     </div>
   </div>
 
-  <!-- 頂部導航欄 -->
+  <!-- ==================== 頂部導航欄 ==================== -->
   <header class="bg-blue-950 text-white sticky top-0 z-40 shadow-xl border-b border-blue-900">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-emerald-600 flex items-center justify-center font-black text-sm shadow">IP</div>
-        <div>
+        <div class="flex items-center flex-wrap gap-1.5">
           <span class="text-base font-extrabold tracking-tight text-white">INVOICE <span class="text-emerald-400">PRO</span></span>
-          <span class="ml-2 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium" id="db-status-badge">🟢 已連通雲端</span>
+          <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium" id="db-status-badge">🟢 已連通雲端</span>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <button type="button" onclick="changePinCode()" class="text-xs bg-blue-900 hover:bg-blue-800 border border-blue-800 px-2.5 py-1.5 rounded-xl text-slate-200 transition">🔑 密碼</button>
-        <button type="button" onclick="openDbModal()" class="text-xs bg-blue-900 hover:bg-blue-800 border border-blue-800 px-3 py-1.5 rounded-xl font-medium transition">⚙️ 雲端設定</button>
+      <div class="flex items-center gap-1.5">
+        <button type="button" onclick="lockSystemNow()" class="text-xs bg-blue-900/80 hover:bg-blue-800 border border-blue-800 px-2.5 py-1.5 rounded-xl text-slate-200 transition" title="立即鎖定畫面">🔒 鎖定</button>
+        <button type="button" onclick="changePinCode()" class="text-xs bg-blue-900/80 hover:bg-blue-800 border border-blue-800 px-2.5 py-1.5 rounded-xl text-slate-200 transition">🔑 改密碼</button>
+        <button type="button" onclick="openDbModal()" class="text-xs bg-blue-900/80 hover:bg-blue-800 border border-blue-800 px-2.5 py-1.5 rounded-xl font-medium transition">⚙️ 雲端</button>
       </div>
     </div>
 
     <div class="max-w-5xl mx-auto px-3 flex gap-1 text-xs sm:text-sm overflow-x-auto bg-blue-950/80">
-      <button type="button" onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-2.5 px-3 text-center font-bold border-b-2 border-emerald-400 text-emerald-400 whitespace-nowrap transition">✏️ 開立/編輯單據</button>
-      <button type="button" onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">📄 A4 預覽及傳送</button>
-      <button type="button" onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">🗂️ 單據紀錄及追數</button>
-      <button type="button" onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">🛠️ 後台資料管理</button>
+      <button type="button" onclick="switchTab('editor')" id="tab-editor" class="flex-1 py-2.5 px-3 text-center font-bold border-b-2 border-emerald-400 text-emerald-400 whitespace-nowrap transition">✏️ 1. 編輯單據</button>
+      <button type="button" onclick="switchTab('preview')" id="tab-preview" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">📄 2. A4 預覽及發出</button>
+      <button type="button" onclick="switchTab('history')" id="tab-history" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">🗂️ 3. 單據紀錄庫 <span id="history-count-badge" class="ml-1 text-[10px] bg-blue-800 text-emerald-300 px-1.5 py-0.5 rounded-full">0</span></button>
+      <button type="button" onclick="switchTab('admin')" id="tab-admin" class="flex-1 py-2.5 px-3 text-center font-medium text-slate-300 hover:text-white whitespace-nowrap transition">🛠️ 4. 後台資料管理</button>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto p-3.5 sm:p-6">
-    <!-- TAB 1: 編輯單據 -->
+    <!-- ==================== TAB 1: 開立/編輯單據 ==================== -->
     <section id="view-editor" class="space-y-5">
+      <!-- 單據狀態與儲存控制頂欄 (清晰區分「草稿繼續改」vs「正式發出」vs「開新單」) -->
       <div class="ui-card p-4 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-white to-emerald-50/40">
-        <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span class="text-xs text-slate-500 font-medium">當前狀態：</span>
-          <span id="current-edit-status" class="text-sm font-extrabold text-slate-800">新單據草稿</span>
+        <div class="space-y-0.5">
+          <div class="flex items-center gap-2">
+            <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+            <span class="text-xs text-slate-500 font-medium">當前單據狀態：</span>
+            <span id="current-edit-status" class="text-xs sm:text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">📝 新單據草稿 (未存檔)</span>
+          </div>
+          <p class="text-[11px] text-slate-500 pl-4">💡 撳「儲存草稿」會保留喺當前單號畀你繼續改；撳「正式發出並預覽」會存檔上雲端並跳去 A4 預覽。</p>
         </div>
-        <div class="flex flex-wrap gap-2">
-          <button type="button" onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-semibold transition">➕ 開新空白單</button>
-          <button type="button" onclick="saveInvoiceToDb(false)" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2 rounded-xl font-bold transition">💾 儲存草稿</button>
-          <button type="button" onclick="saveInvoiceToDb(true)" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">🚀 正式發出並鎖定</button>
+        <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+          <button type="button" onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl font-bold transition">
+            ➕ 開新單據 (跳下一個單號)
+          </button>
+          <button type="button" onclick="saveInvoiceToDb('DRAFT', false)" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2 rounded-xl font-bold shadow-sm transition active:scale-95">
+            💾 儲存草稿 (繼續編輯)
+          </button>
+          <button type="button" onclick="saveInvoiceToDb('ISSUED', true)" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">
+            🚀 正式發出並預覽 →
+          </button>
         </div>
       </div>
 
+      <!-- 1. 單據屬性及開單公司 -->
       <div class="ui-card p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div class="flex items-center gap-2">
@@ -229,10 +257,10 @@
           </select>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
           <div>
-            <label class="ui-label text-blue-900 font-bold">📑 單據類型</label>
-            <select id="doc-type" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
+            <label class="ui-label text-blue-900 font-bold">📑 單據類型 (一單三用)</label>
+            <select id="doc-type" onchange="handleEditorChange()" class="ui-input font-bold !bg-white">
               <option value="QUOTATION">QUOTATION (報價單)</option>
               <option value="INVOICE" selected>INVOICE (發票)</option>
               <option value="RECEIPT">RECEIPT (正式收據)</option>
@@ -240,73 +268,107 @@
           </div>
           <div>
             <label class="ui-label">💰 找數狀態</label>
-            <select id="payment-status" onchange="renderInvoicePreview()" class="ui-input font-bold !bg-white">
+            <select id="payment-status" onchange="handleEditorChange()" class="ui-input font-bold !bg-white">
               <option value="UNPAID">🔴 未付款 (Unpaid)</option>
               <option value="PARTIAL">🟡 部分付款 (Partial)</option>
               <option value="PAID">🟢 已付清 (蓋 PAID 印)</option>
             </select>
           </div>
           <div>
-            <label class="ui-label">單據編號 (#)</label>
-            <input type="text" id="inv-number" value="23" oninput="renderInvoicePreview()" class="ui-input font-mono font-bold !bg-white" />
+            <div class="flex items-center justify-between mb-1">
+              <label class="ui-label !mb-0">單據編號 (#)</label>
+              <button type="button" onclick="assignNextAvailableNumber()" class="text-[10px] text-blue-700 hover:underline font-bold" title="自動計算最新單號">⚡ 自動編號</button>
+            </div>
+            <input type="text" id="inv-number" value="23" oninput="checkDuplicateNumber(); handleEditorChange();" class="ui-input font-mono font-bold !bg-white" />
+            <div id="dup-number-warning" class="hidden mt-1 text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-0.5 font-medium"></div>
           </div>
           <div>
             <label class="ui-label">單據日期 (DATE)</label>
-            <input type="date" id="inv-date" onchange="renderInvoicePreview()" class="ui-input !bg-white" />
+            <input type="date" id="inv-date" onchange="handleEditorChange()" class="ui-input !bg-white" />
           </div>
         </div>
 
-        <!-- 視覺資產：Logo / 印章 / 簽名 / QR -->
+        <!-- 視覺資產：Logo (連尺寸控制) / 授權簽名 (左) / 公司印章 (右) / FPS QR -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-logo-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 Logo</div>
-            <div class="flex-1 min-w-0">
-              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">公司 Logo</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[10px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('logo')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
+          <!-- Logo 及排版適配控制 -->
+          <div class="flex flex-col justify-between bg-slate-50/70 p-3 rounded-xl border border-slate-200 space-y-2">
+            <div class="flex items-center gap-2.5">
+              <div id="editor-logo-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 Logo</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">1. 公司 Logo</label>
+                <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[10px] w-full text-slate-500" />
+                <button type="button" onclick="clearEditorImage('logo')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除 Logo</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between pt-1.5 border-t border-slate-200/80 text-[10px]">
+              <span class="text-slate-600 font-semibold">Logo 及抬頭比例:</span>
+              <select id="logo-size-mode" onchange="handleEditorChange()" class="border border-slate-300 rounded px-1.5 py-0.5 bg-white font-semibold text-slate-700">
+                <option value="sm">小巧 (高 45px)</option>
+                <option value="md" selected>標準 (高 65px)</option>
+                <option value="lg">顯眼 (高 88px)</option>
+                <option value="inline">Logo 與公司名並排</option>
+              </select>
             </div>
           </div>
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-chop-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無印章</div>
-            <div class="flex-1 min-w-0">
-              <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
-                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" /> 公司印章
-              </label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[10px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('chop')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
+
+          <!-- 授權簽名圖檔 (顯示於左邊) -->
+          <div class="flex flex-col justify-between bg-slate-50/70 p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-2.5">
+              <div id="editor-sig-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無簽名</div>
+              <div class="flex-1 min-w-0">
+                <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
+                  <input type="checkbox" id="show-sig-checkbox" checked onchange="handleEditorChange()" class="rounded text-emerald-600" /> 2. 授權簽名 (左)
+                </label>
+                <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'sig')" class="text-[10px] w-full text-slate-500" />
+                <button type="button" onclick="clearEditorImage('sig')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除簽名</button>
+              </div>
             </div>
+            <div class="text-[10px] text-slate-500 pt-1.5 border-t border-slate-200/80">自動排喺右下角簽名區<strong>左邊</strong></div>
           </div>
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-sig-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無簽名</div>
-            <div class="flex-1 min-w-0">
-              <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
-                <input type="checkbox" id="show-sig-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" /> 授權簽名
-              </label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'sig')" class="text-[10px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('sig')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
+
+          <!-- 公司印章圖檔 (顯示於簽名右邊) -->
+          <div class="flex flex-col justify-between bg-slate-50/70 p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-2.5">
+              <div id="editor-chop-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無印章</div>
+              <div class="flex-1 min-w-0">
+                <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
+                  <input type="checkbox" id="show-chop-checkbox" checked onchange="handleEditorChange()" class="rounded text-emerald-600" /> 3. 公司印章 (右)
+                </label>
+                <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[10px] w-full text-slate-500" />
+                <button type="button" onclick="clearEditorImage('chop')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除印章</button>
+              </div>
             </div>
+            <div class="text-[10px] text-emerald-700 font-medium pt-1.5 border-t border-slate-200/80">✓ 印章固定排喺<strong>簽名右邊</strong></div>
           </div>
-          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-qr-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 QR</div>
-            <div class="flex-1 min-w-0">
-              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">FPS QR Code</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[10px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('qr')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
+
+          <!-- FPS 收款 QR Code -->
+          <div class="flex flex-col justify-between bg-slate-50/70 p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-2.5">
+              <div id="editor-qr-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 QR</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">4. FPS 收款 QR</label>
+                <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[10px] w-full text-slate-500" />
+                <button type="button" onclick="clearEditorImage('qr')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除 QR</button>
+              </div>
             </div>
+            <div class="text-[10px] text-slate-500 pt-1.5 border-t border-slate-200/80">顯示於單據左下角收款欄旁</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
-          <div><label class="ui-label">公司名稱 (Company Name)</label><input type="text" id="comp-name" value="迪高室內設計 Ecdeco Company" oninput="renderInvoicePreview()" class="ui-input font-semibold" /></div>
-          <div><label class="ui-label">聯絡電話 (Phone)</label><input type="text" id="comp-phone" value="(852) 9123-4567" oninput="renderInvoicePreview()" class="ui-input" /></div>
-          <div><label class="ui-label">街道地址 (Street Address)</label><input type="text" id="comp-address" value="中環皇后大道中222-226號啟煌商業大廈1002室" oninput="renderInvoicePreview()" class="ui-input" /></div>
-          <div><label class="ui-label">英文地址 / 地區 (City, ST ZIP)</label><input type="text" id="comp-city" value="Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK" oninput="renderInvoicePreview()" class="ui-input" /></div>
+          <div><label class="ui-label">公司名稱 (Company Name - 自動適配字體大小)</label><input type="text" id="comp-name" value="迪高室內設計 Ecdeco Company" oninput="handleEditorChange()" class="ui-input font-semibold" /></div>
+          <div><label class="ui-label">聯絡電話 (Phone)</label><input type="text" id="comp-phone" value="(852) 9123-4567" oninput="handleEditorChange()" class="ui-input" /></div>
+          <div><label class="ui-label">中文街道地址 (Street Address)</label><input type="text" id="comp-address" value="中環皇后大道中222-226號啟煌商業大廈1002室" oninput="handleEditorChange()" class="ui-input" /></div>
+          <div><label class="ui-label">英文地址 / 地區 (City, ST ZIP)</label><input type="text" id="comp-city" value="Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK" oninput="handleEditorChange()" class="ui-input" /></div>
           <div class="sm:col-span-2">
-            <div class="flex items-center justify-between mb-1">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
               <label class="ui-label !mb-0">🏦 付款方法及銀行轉賬條款 (Payment Methods)</label>
-              <button type="button" onclick="fillEcdecoPaymentTerms()" class="text-[11px] text-emerald-700 hover:underline font-semibold">🔄 載入迪高標準中英條款</button>
+              <div class="flex gap-2">
+                <button type="button" onclick="saveCurrentCompanyToAdmin()" class="text-[11px] bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded font-semibold hover:bg-blue-100">💾 將當前公司及印章簽名存為預設</button>
+                <button type="button" onclick="fillEcdecoPaymentTerms()" class="text-[11px] text-emerald-700 hover:underline font-semibold">🔄 載入迪高標準中英條款</button>
+              </div>
             </div>
-            <textarea id="comp-payment-info" rows="5" oninput="renderInvoicePreview()" class="ui-input text-xs leading-relaxed">(i) 郵遞付款 (Post the cheque): 將劃線支票連同工程支付通知書寄往中環皇后大道中222-226號啟煌商業大廈1002室。請勿郵寄現金。註:劃線支票抬頭請寫「Ecdeco Company」或「迪高室內設計」,並於支票背面註明工程編號。請客戶於到期繳款日前五個工作天前寄回,並將以過數日為準,本公司不接受期票及請勿郵寄現金。
+            <textarea id="comp-payment-info" rows="5" oninput="handleEditorChange()" class="ui-input text-xs leading-relaxed">(i) 郵遞付款 (Post the cheque): 將劃線支票連同工程支付通知書寄往中環皇后大道中222-226號啟煌商業大廈1002室。請勿郵寄現金。註:劃線支票抬頭請寫「Ecdeco Company」或「迪高室內設計」,並於支票背面註明工程編號。請客戶於到期繳款日前五個工作天前寄回,並將以過數日為準,本公司不接受期票及請勿郵寄現金。
 Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your project number at the back of the cheque) and post it to Room 1002 Kai Wong Commercial Building, No.224 Queens Road Central, Central, Hong Kong. Any post dated cheque payment shall not be accepted. Please post the cheque five days prior the due date and do not post cash to us.
 (ii) 親臨付款 (Payment by hand): 客人可以攜同工程支付通知書到本公司以現金、支票繳款。Customers are advised to settle the bill by paying cash or cheque at our office.
 (iii) 銀行轉賬 (ATM Transfer): 客人可於匯豐銀行之自動櫃員機轉賬付款。請保留入數証明。存入本公司之匯豐銀行戶口號碼 "640-097770-838" (Transferring funds by HSBC ATM kiosk to our HSBC account: 640-097770-838. Please retain the transaction receipt.)
@@ -315,36 +377,42 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         </div>
       </div>
 
+      <!-- 2. 客戶資料 (BILL TO) -->
       <div class="ui-card p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div class="flex items-center gap-2">
             <span class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-900 flex items-center justify-center text-sm font-bold">2</span>
             <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">客戶資料 (BILL TO)</h2>
           </div>
-          <select id="select-client" onchange="applySelectedClient(this.value)" class="text-xs border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 rounded-xl px-3 py-2 font-bold outline-none transition cursor-pointer">
-            <option value="">👤 從常用客戶載入...</option>
-          </select>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="quickSaveCurrentClient()" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2.5 py-1.5 rounded-xl font-semibold transition">＋ 存入常用客戶</button>
+            <select id="select-client" onchange="applySelectedClient(this.value)" class="text-xs border border-emerald-300 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-900 rounded-xl px-3 py-1.5 font-bold outline-none transition cursor-pointer">
+              <option value="">👤 從常用客戶載入...</option>
+            </select>
+          </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div><label class="ui-label">客戶/聯絡人姓名 (Name)</label><input type="text" id="client-name" value="Jessica Wili" oninput="renderInvoicePreview()" class="ui-input font-semibold" /></div>
-          <div><label class="ui-label">客戶公司名稱 (Company Name)</label><input type="text" id="client-company" value="ABC Properties Ltd." oninput="renderInvoicePreview()" class="ui-input" /></div>
-          <div><label class="ui-label">工程/街道地址 (Street Address)</label><input type="text" id="client-address" value="8 De Yun Road" oninput="renderInvoicePreview()" class="ui-input" /></div>
-          <div><label class="ui-label">地區 (City, ST ZIP)</label><input type="text" id="client-city" value="Kowloon, HK" oninput="renderInvoicePreview()" class="ui-input" /></div>
-          <div><label class="ui-label">WhatsApp 電話 (連區號如 85291234567)</label><input type="text" id="client-phone" value="85291234567" oninput="renderInvoicePreview()" class="ui-input font-mono" /></div>
-          <div><label class="ui-label">電郵地址 (Email Address)</label><input type="email" id="client-email" value="jessica@example.com" oninput="renderInvoicePreview()" class="ui-input" /></div>
+          <div><label class="ui-label">客戶/聯絡人姓名 (Name)</label><input type="text" id="client-name" value="Jessica Wili" oninput="handleEditorChange()" class="ui-input font-semibold" /></div>
+          <div><label class="ui-label">客戶公司名稱 (Company Name)</label><input type="text" id="client-company" value="ABC Properties Ltd." oninput="handleEditorChange()" class="ui-input" /></div>
+          <div><label class="ui-label">工程/街道地址 (Street Address)</label><input type="text" id="client-address" value="8 De Yun Road" oninput="handleEditorChange()" class="ui-input" /></div>
+          <div><label class="ui-label">地區 (City, ST ZIP)</label><input type="text" id="client-city" value="Kowloon, HK" oninput="handleEditorChange()" class="ui-input" /></div>
+          <div><label class="ui-label">WhatsApp 電話 (連區號如 85291234567)</label><input type="text" id="client-phone" value="85291234567" oninput="handleEditorChange()" class="ui-input font-mono" /></div>
+          <div><label class="ui-label">電郵地址 (Email Address)</label><input type="email" id="client-email" value="jessica@example.com" oninput="handleEditorChange()" class="ui-input" /></div>
         </div>
       </div>
 
+      <!-- 3. 工程及收費項目明細 -->
       <div class="ui-card p-5 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div class="flex items-center gap-2">
             <span class="w-7 h-7 rounded-lg bg-teal-100 text-teal-900 flex items-center justify-center text-sm font-bold">3</span>
-            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">工程及收費項目明細 (支援負數折扣)</h2>
+            <h2 class="font-extrabold text-slate-800 text-sm sm:text-base">工程及收費項目明細 (支援負數折扣及排序)</h2>
           </div>
           <div class="flex flex-wrap gap-2">
             <select id="select-catalog-item" onchange="addCatalogItemToInvoice(this.value); this.value='';" class="text-xs border border-teal-300 bg-teal-50 text-teal-900 rounded-xl px-3 py-2 font-bold outline-none cursor-pointer">
               <option value="">＋ 插入常用收費項目...</option>
             </select>
+            <button type="button" onclick="addLineItem('客戶特別折扣優惠 (Discount)', -500)" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-3 py-2 rounded-xl font-bold transition">＋ 折扣行</button>
             <button type="button" onclick="addLineItem('', 0)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl font-bold shadow-sm transition">＋ 新增項目行</button>
           </div>
         </div>
@@ -353,61 +421,84 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           <div class="flex justify-between items-center text-sm text-slate-600"><span class="font-medium">項目小計 (SUBTOTAL)：</span><span id="editor-subtotal-display" class="font-mono font-bold text-slate-800">$0.00</span></div>
           <div class="flex flex-wrap justify-between items-center gap-2 text-sm text-slate-700">
             <label for="deposit-paid-input" class="font-semibold text-emerald-700">➖ 減：已收訂金 / 上期工程款 (LESS DEPOSIT PAID)：</label>
-            <input type="number" step="0.01" id="deposit-paid-input" value="0" oninput="updateTotalDisplay(); renderInvoicePreview();" class="w-36 border border-slate-300 rounded-xl px-3 py-1.5 text-right font-mono text-sm bg-white font-bold text-emerald-700 focus:border-emerald-600 outline-none" />
+            <input type="number" step="0.01" id="deposit-paid-input" value="0" oninput="updateTotalDisplay(); handleEditorChange();" class="w-36 border border-slate-300 rounded-xl px-3 py-1.5 text-right font-mono text-sm bg-white font-bold text-emerald-700 focus:border-emerald-600 outline-none" />
           </div>
           <div class="flex justify-between items-center text-base font-extrabold text-slate-900 pt-2.5 border-t border-slate-200">
             <span>今期應付結餘 (BALANCE DUE / TOTAL)：</span><span id="editor-total-display" class="text-2xl text-blue-900 font-mono">$0.00</span>
           </div>
         </div>
+
+        <!-- 底部操作按鈕 -->
+        <div class="flex flex-wrap justify-end gap-2.5 pt-2">
+          <button type="button" onclick="saveInvoiceToDb('DRAFT', false)" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-4 py-2.5 rounded-xl font-bold shadow-sm transition">
+            💾 儲存草稿 (停留此頁繼續改)
+          </button>
+          <button type="button" onclick="saveInvoiceToDb('ISSUED', true)" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-md transition">
+            🚀 正式發出單據並前往預覽 →
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- TAB 2: A4 預覽 -->
+    <!-- ==================== TAB 2: A4 預覽及發出 ==================== -->
     <section id="view-preview" class="hidden space-y-4">
       <div class="ui-card p-4 space-y-3.5">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 class="font-extrabold text-slate-800 text-sm">🚀 單據輸出與一鍵 WhatsApp 傳送</h3>
-            <p class="text-[11px] text-slate-500">右上角可快速轉換單據性質，手機撳綠色掣即可連同 PDF 發送給客人</p>
+            <p class="text-[11px] text-slate-500">預覽無誤後，可下載 PDF 或直接傳送給客人（系統會自動將此單據存檔至雲端紀錄庫）</p>
           </div>
-          <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl">
-            <button type="button" onclick="quickConvertDocType('QUOTATION')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-slate-700 transition">報價單</button>
-            <button type="button" onclick="quickConvertDocType('INVOICE')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-blue-900 transition">發票 Invoice</button>
-            <button type="button" onclick="quickConvertDocType('RECEIPT')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-emerald-700 transition">正式收據(PAID)</button>
+          <div class="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button type="button" onclick="switchTab('editor')" class="text-xs bg-white hover:bg-slate-50 px-2.5 py-1.5 rounded-lg font-bold text-slate-700 shadow-sm transition">← 返回修改內容</button>
+            <button type="button" onclick="quickConvertDocType('QUOTATION')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-slate-700 transition">轉報價單</button>
+            <button type="button" onclick="quickConvertDocType('INVOICE')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-blue-900 transition">轉 Invoice</button>
+            <button type="button" onclick="quickConvertDocType('RECEIPT')" class="text-xs hover:bg-white px-2.5 py-1.5 rounded-lg font-semibold text-emerald-700 transition">轉正式收據(PAID)</button>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <button type="button" onclick="sharePdfToWhatsApp()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 px-4 rounded-xl shadow-md transition text-sm"><span>📲 生成 PDF 直送 WhatsApp</span></button>
-          <button type="button" onclick="downloadInvoicePdf()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition text-sm"><span>📥 下載高清 A4 PDF</span></button>
+          <button type="button" onclick="sharePdfToWhatsApp()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3 px-4 rounded-xl shadow-md transition text-sm"><span>📲 正式發出並直送 WhatsApp</span></button>
+          <button type="button" onclick="downloadInvoicePdf()" class="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-900 to-indigo-900 hover:from-blue-800 hover:to-indigo-800 text-white font-bold py-3 px-4 rounded-xl shadow-md transition text-sm"><span>📥 正式發出並下載 A4 PDF</span></button>
           <button type="button" onclick="saveAndPrint()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl shadow transition text-sm"><span>🖨️ 儲存並直接列印</span></button>
         </div>
       </div>
 
+      <!-- A4 紙張預覽區 -->
       <div id="preview-wrapper" class="preview-scale-wrapper py-2">
         <div id="invoice-print-area" class="invoice-paper">
           <div id="inv-render-paid-stamp" class="paid-stamp hidden">PAID</div>
-          <div>
-            <div class="flex justify-between items-start">
-              <div class="max-w-[56%]">
-                <div id="inv-render-logo-box" class="mb-2 hidden"><img id="inv-render-logo" src="" alt="Company Logo" class="max-h-16 max-w-[200px] object-contain" /></div>
-                <div id="inv-render-comp-name" class="text-[20px] font-bold text-slate-900 mb-1 leading-snug tracking-tight">迪高室內設計 Ecdeco Company</div>
-                <div class="text-[11px] leading-[1.4] text-slate-700 space-y-0.5">
+
+          <div class="flex-1 flex flex-col">
+            <!-- 頂部：動態適應 Logo 尺寸與公司名稱長度 -->
+            <div class="flex justify-between items-start gap-4">
+              <div id="inv-header-left" class="max-w-[56%] flex flex-col items-start">
+                <div id="inv-render-brand-wrapper" class="flex flex-col items-start w-full">
+                  <div id="inv-render-logo-box" class="mb-2 hidden">
+                    <img id="inv-render-logo" src="" alt="Company Logo" class="object-contain object-left" style="max-height: 65px; max-width: 240px;" />
+                  </div>
+                  <div id="inv-render-comp-name" class="text-[21px] font-extrabold text-slate-900 mb-1 leading-snug tracking-tight break-words">
+                    迪高室內設計 Ecdeco Company
+                  </div>
+                </div>
+                <div class="text-[11px] leading-[1.45] text-slate-700 space-y-0.5 mt-0.5">
                   <div id="inv-render-comp-address">中環皇后大道中222-226號啟煌商業大廈1002室</div>
                   <div id="inv-render-comp-city">Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK</div>
                   <div id="inv-render-comp-phone" class="font-medium text-slate-800">Phone: (852) 9123-4567</div>
                 </div>
               </div>
-              <div class="text-right">
+
+              <div class="text-right shrink-0">
                 <div id="inv-render-doc-title" class="inv-title">INVOICE</div>
                 <table class="inv-header-table">
                   <thead><tr><th id="inv-render-num-header">INVOICE #</th><th>DATE</th></tr></thead>
-                  <tbody><tr><td id="inv-render-number">23</td><td id="inv-render-date">10/16/2026</td></tr></tbody>
+                  <tbody><tr><td id="inv-render-number">23</td><td id="inv-render-date">10/17/2026</td></tr></tbody>
                 </table>
               </div>
             </div>
+
+            <!-- BILL TO -->
             <div>
               <div class="inv-billto-header">BILL TO</div>
-              <div class="text-[12px] leading-[1.5] text-slate-800 pl-1.5 space-y-0.5">
+              <div class="text-[12px] leading-[1.48] text-slate-800 pl-1.5 space-y-0.5">
                 <div id="inv-render-client-name" class="font-bold text-[13px] text-slate-900">Jessica Wili</div>
                 <div id="inv-render-client-company" class="font-medium">ABC Properties Ltd.</div>
                 <div id="inv-render-client-address">8 De Yun Road</div>
@@ -416,6 +507,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
                 <div id="inv-render-client-email" class="text-slate-600">jessica@example.com</div>
               </div>
             </div>
+
+            <!-- 收費項目長框表格 -->
             <div class="inv-items-box">
               <div class="inv-items-header"><div>DESCRIPTION</div><div>AMOUNT</div></div>
               <div id="inv-render-items-body" class="inv-items-body"></div>
@@ -423,27 +516,37 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
             </div>
           </div>
 
-          <!-- 底部：付款條款 + 左邊簽名、右邊印章 -->
-          <div class="mt-3 pt-2.5 border-t border-slate-300 flex justify-between items-end gap-3">
-            <div class="flex items-start gap-2.5 max-w-[58%]">
+          <!-- 底部：左邊付款條款 + FPS QR；右邊「簽名在左、印章在右」授權區 -->
+          <div class="mt-3 pt-2.5 border-t border-slate-300 flex justify-between items-end gap-4">
+            <div class="flex items-start gap-2.5 max-w-[60%]">
               <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1 rounded bg-white shadow-sm mt-0.5">
                 <img id="inv-render-qr" src="" alt="Payment QR" class="w-14 h-14 object-contain" />
-                <div class="text-[7.5px] font-bold text-center text-slate-500 mt-0.5">FPS</div>
+                <div class="text-[7.5px] font-bold text-center text-slate-500 mt-0.5">FPS / Pay</div>
               </div>
               <div class="text-[8.5px] leading-[1.32] text-slate-700">
                 <div class="font-bold text-[9.5px] text-blue-950 mb-0.5 tracking-wide">付款方法 (Payment Methods)：</div>
                 <div id="inv-render-payment-info" class="whitespace-pre-line text-justify"></div>
               </div>
             </div>
-            <!-- 左邊簽名、右邊印章並排區 -->
-            <div class="w-52 shrink-0 flex items-end justify-between text-center gap-2">
-              <div class="flex-1">
-                <div class="h-16 flex items-center justify-center relative"><img id="inv-render-sig" src="" alt="Signature" class="max-h-16 max-w-full object-contain hidden" /></div>
-                <div class="border-t border-slate-400 pt-0.5 text-[9px] font-semibold text-slate-600">Authorized Signature</div>
+
+            <!-- 右下角簽署及印章區：左邊簽名 (Signature)，右邊公司印章 (Company Chop) -->
+            <div class="w-60 shrink-0 flex flex-col items-center text-center">
+              <div class="text-[9px] text-slate-500 font-medium mb-1 w-full text-center truncate" id="inv-render-for-company">
+                For and on behalf of 迪高室內設計 Ecdeco Company
               </div>
-              <div class="flex-1">
-                <div class="h-16 flex items-center justify-center relative"><img id="inv-render-chop" src="" alt="Company Chop" class="max-h-16 max-w-full object-contain hidden" /></div>
-                <div class="border-t border-slate-400 pt-0.5 text-[9px] font-semibold text-slate-600">Company Chop</div>
+              <div class="h-20 w-full flex items-center justify-center gap-3 px-2 relative">
+                <!-- 左：簽名圖檔 -->
+                <div id="inv-render-sig-wrap" class="flex-1 h-full flex items-center justify-center hidden">
+                  <img id="inv-render-sig" src="" alt="Authorized Signature" class="max-h-16 max-w-[105px] object-contain" />
+                </div>
+                <!-- 右：公司印章 -->
+                <div id="inv-render-chop-wrap" class="flex-1 h-full flex items-center justify-center hidden">
+                  <img id="inv-render-chop" src="" alt="Company Chop" class="max-h-20 max-w-[105px] object-contain" />
+                </div>
+              </div>
+              <div class="w-full border-t border-slate-600 pt-1 flex justify-around text-[9px] font-bold text-slate-700 tracking-wide">
+                <span>Authorized Signature</span>
+                <span>Company Chop</span>
               </div>
             </div>
           </div>
@@ -451,18 +554,27 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       </div>
     </section>
 
-    <!-- TAB 3: 歷史紀錄庫 -->
+    <!-- ==================== TAB 3: 單據紀錄庫及未收帳統計 ==================== -->
     <section id="view-history" class="hidden space-y-4">
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div class="ui-card p-4 border-l-4 border-l-blue-900"><div class="text-xs font-semibold text-slate-500">已開立發票/收據總額</div><div id="stat-total-invoiced" class="text-2xl font-extrabold font-mono text-slate-900 mt-1">$0.00</div></div>
+        <div class="ui-card p-4 border-l-4 border-l-blue-900"><div class="text-xs font-semibold text-slate-500">已開立發票/收據總額 (不計草稿/報價)</div><div id="stat-total-invoiced" class="text-2xl font-extrabold font-mono text-slate-900 mt-1">$0.00</div></div>
         <div class="ui-card p-4 border-l-4 border-l-emerald-600"><div class="text-xs font-semibold text-emerald-600">🟢 已收清款項 (Paid)</div><div id="stat-total-paid" class="text-2xl font-extrabold font-mono text-emerald-700 mt-1">$0.00</div></div>
         <div class="ui-card p-4 border-l-4 border-l-red-500"><div class="text-xs font-semibold text-red-600">🔴 尚欠未收總額 (Outstanding)</div><div id="stat-total-unpaid" class="text-2xl font-extrabold font-mono text-red-600 mt-1">$0.00</div></div>
       </div>
       <div class="ui-card p-5">
         <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
-          <h2 class="font-extrabold text-slate-800 text-base">🗂️ 歷史單據紀錄庫</h2>
+          <div>
+            <h2 class="font-extrabold text-slate-800 text-base">🗂️ 雲端單據紀錄庫</h2>
+            <p class="text-xs text-slate-500">所有「草稿」及「已正式發出」的單據均儲存於此，隨時可點擊「繼續編輯」或「一鍵轉收據」</p>
+          </div>
           <div class="flex flex-wrap gap-2">
-            <select id="history-filter-status" onchange="renderHistoryList()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold bg-white"><option value="ALL">全部狀態</option><option value="UNPAID">🔴 只看未付款</option><option value="PARTIAL">🟡 只看部分付款</option><option value="PAID">🟢 只看已付清</option></select>
+            <select id="history-filter-status" onchange="renderHistoryList()" class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-semibold bg-white">
+              <option value="ALL">全部單據</option>
+              <option value="DRAFT">📝 只看草稿 (Draft)</option>
+              <option value="UNPAID">🔴 只看未付款</option>
+              <option value="PARTIAL">🟡 只看部分付款</option>
+              <option value="PAID">🟢 只看已付清</option>
+            </select>
             <input type="text" id="history-search" oninput="renderHistoryList()" placeholder="🔍 搜尋單號或客戶..." class="border border-slate-300 rounded-xl px-3 py-1.5 text-xs bg-white" />
             <button type="button" onclick="loadAllData()" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">🔄 刷新</button>
           </div>
@@ -471,45 +583,73 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       </div>
     </section>
 
-    <!-- TAB 4: 後台管理 -->
+    <!-- ==================== TAB 4: 後台資料管理 ==================== -->
     <section id="view-admin" class="hidden space-y-6">
-      <div class="ui-card p-5 space-y-4">
-        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏢 1. 開單公司資料、收款戶口及印章管理</h2>
+      <!-- 1. 公司資料管理 -->
+      <div id="admin-company-card" class="ui-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-extrabold text-slate-800 text-base">🏢 1. 開單公司資料、簽名及印章管理</h2>
+          <span id="admin-comp-mode-badge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">新增公司模式</span>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-comp-id" />
-          <div><label class="ui-label">公司名稱 *</label><input type="text" id="admin-comp-name" placeholder="例如：迪高室內設計" class="ui-input !bg-white" /></div>
-          <div><label class="ui-label">電話</label><input type="text" id="admin-comp-phone" placeholder="例如：(852) 9123-4567" class="ui-input !bg-white" /></div>
-          <div><label class="ui-label">中文街道地址</label><input type="text" id="admin-comp-address" placeholder="例如：中環皇后大道中222-226號" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">公司名稱 *</label><input type="text" id="admin-comp-name" placeholder="例如：迪高室內設計 Ecdeco Company" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">聯絡電話</label><input type="text" id="admin-comp-phone" placeholder="例如：(852) 9123-4567" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">中文街道地址</label><input type="text" id="admin-comp-address" placeholder="例如：中環皇后大道中222-226號啟煌商業大廈1002室" class="ui-input !bg-white" /></div>
           <div><label class="ui-label">英文地址 / 地區</label><input type="text" id="admin-comp-city" placeholder="Room 1002, Kai Wong Commercial Building, HK" class="ui-input !bg-white" /></div>
           <div class="sm:col-span-2"><label class="ui-label">🏦 預設收款辦法 / 銀行戶口條款</label><textarea id="admin-comp-payment" rows="4" placeholder="支票抬頭、銀行轉賬戶口及條款..." class="ui-input !bg-white text-xs"></textarea></div>
+          
           <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
-            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
-              <div id="admin-logo-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 Logo</div>
-              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">Logo</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[10px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-logo-preview" class="w-11 h-11 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 Logo</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[10px] font-bold text-slate-700">1. 公司 Logo</label>
+                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[10px] w-full" />
+                <button type="button" onclick="currentAdminLogoBase64=''; document.getElementById('admin-logo-preview').innerHTML='無 Logo';" class="text-[10px] text-red-500 hover:underline">清除</button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
-              <div id="admin-chop-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無印章</div>
-              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">公司印章</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[10px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-sig-preview" class="w-11 h-11 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無簽名</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[10px] font-bold text-slate-700">2. 授權簽名 (左)</label>
+                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'sig')" class="text-[10px] w-full" />
+                <button type="button" onclick="currentAdminSigBase64=''; document.getElementById('admin-sig-preview').innerHTML='無簽名';" class="text-[10px] text-red-500 hover:underline">清除</button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
-              <div id="admin-sig-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無簽名</div>
-              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">授權簽名</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'sig')" class="text-[10px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-chop-preview" class="w-11 h-11 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無印章</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[10px] font-bold text-slate-700">3. 公司印章 (右)</label>
+                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[10px] w-full" />
+                <button type="button" onclick="currentAdminChopBase64=''; document.getElementById('admin-chop-preview').innerHTML='無印章';" class="text-[10px] text-red-500 hover:underline">清除</button>
+              </div>
             </div>
-            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
-              <div id="admin-qr-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 QR</div>
-              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">FPS QR</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[10px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200">
+              <div id="admin-qr-preview" class="w-11 h-11 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 QR</div>
+              <div class="flex-1 min-w-0">
+                <label class="block text-[10px] font-bold text-slate-700">4. FPS QR</label>
+                <input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[10px] w-full" />
+                <button type="button" onclick="currentAdminQrBase64=''; document.getElementById('admin-qr-preview').innerHTML='無 QR';" class="text-[10px] text-red-500 hover:underline">清除</button>
+              </div>
             </div>
           </div>
+
           <div class="sm:col-span-2 flex justify-end gap-2 pt-2">
-            <button type="button" onclick="resetAdminCompanyForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
-            <button type="button" onclick="saveCompanyProfile()" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存公司資料</button>
+            <button type="button" onclick="resetAdminCompanyForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">取消 / 清空表單</button>
+            <button type="button" id="admin-comp-save-btn" onclick="saveCompanyProfile()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2 rounded-xl shadow-sm">💾 儲存公司資料</button>
           </div>
         </div>
-        <div id="admin-companies-list" class="space-y-2"></div>
+
+        <div class="space-y-2" id="admin-companies-list"></div>
       </div>
 
-      <div class="ui-card p-5 space-y-4">
-        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">👥 2. 常用客戶資料管理</h2>
+      <!-- 2. 常用客戶管理 -->
+      <div id="admin-client-card" class="ui-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-extrabold text-slate-800 text-base">👥 2. 常用客戶資料管理</h2>
+          <span id="admin-client-mode-badge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">新增客戶模式</span>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-client-id" />
           <div><label class="ui-label">客戶/聯絡人姓名 *</label><input type="text" id="admin-client-name" placeholder="Jessica Wili" class="ui-input !bg-white" /></div>
@@ -519,21 +659,25 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           <div><label class="ui-label">地區</label><input type="text" id="admin-client-city" placeholder="Hong Kong" class="ui-input !bg-white" /></div>
           <div><label class="ui-label">Email</label><input type="email" id="admin-client-email" placeholder="client@email.com" class="ui-input !bg-white" /></div>
           <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-            <button type="button" onclick="resetAdminClientForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
+            <button type="button" onclick="resetAdminClientForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">取消 / 清空</button>
             <button type="button" onclick="saveClientProfile()" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存客戶資料</button>
           </div>
         </div>
         <div id="admin-clients-list" class="space-y-2"></div>
       </div>
 
-      <div class="ui-card p-5 space-y-4">
-        <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏷️ 3. 常用工程/收費項目清單管理</h2>
+      <!-- 3. 常用收費項目管理 -->
+      <div id="admin-item-card" class="ui-card p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h2 class="font-extrabold text-slate-800 text-base">🏷️ 3. 常用工程/收費項目清單管理</h2>
+          <span id="admin-item-mode-badge" class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">新增項目模式</span>
+        </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-item-id" />
           <div class="sm:col-span-2"><label class="ui-label">項目描述 (Description) *</label><input type="text" id="admin-item-desc" placeholder="例如：首期工程訂金 (40%) 或 清拆及泥水工程" class="ui-input !bg-white" /></div>
           <div><label class="ui-label">預設金額 (負數代表折扣)</label><input type="number" step="0.01" id="admin-item-amount" placeholder="例如：15000 或 -500" class="ui-input !bg-white font-mono" /></div>
           <div class="sm:col-span-3 flex justify-end gap-2 pt-1">
-            <button type="button" onclick="resetAdminItemForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">清空</button>
+            <button type="button" onclick="resetAdminItemForm()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3.5 py-2 rounded-xl font-semibold">取消 / 清空</button>
             <button type="button" onclick="saveCatalogItem()" class="text-xs bg-blue-900 hover:bg-blue-800 text-white font-bold px-4 py-2 rounded-xl shadow-sm">💾 儲存收費項目</button>
           </div>
         </div>
@@ -542,13 +686,15 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     </section>
   </main>
 
-  <nav class="fixed bottom-3 left-3 right-3 bg-blue-950/90 backdrop-blur-lg border border-blue-900/80 rounded-2xl px-4 py-2.5 flex justify-around items-center z-40 shadow-2xl sm:hidden">
-    <button type="button" onclick="switchTab('editor')" class="text-xs font-bold text-slate-300 hover:text-white flex flex-col items-center"><span>✏️ 編輯</span></button>
-    <button type="button" onclick="switchTab('preview')" class="text-xs font-bold text-emerald-400 flex flex-col items-center"><span>📄 預覽</span></button>
-    <button type="button" onclick="sharePdfToWhatsApp()" class="text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3.5 py-2 rounded-xl shadow-md"><span>📲 WhatsApp 發送</span></button>
-    <button type="button" onclick="switchTab('history')" class="text-xs font-bold text-slate-300 hover:text-white flex flex-col items-center"><span>🗂️ 追數</span></button>
+  <!-- 手機底部導航欄 -->
+  <nav class="fixed bottom-3 left-3 right-3 bg-blue-950/95 backdrop-blur-lg border border-blue-900/80 rounded-2xl px-3 py-2 flex justify-around items-center z-40 shadow-2xl sm:hidden">
+    <button type="button" onclick="switchTab('editor')" class="text-xs font-bold text-slate-300 hover:text-white flex flex-col items-center py-1"><span>✏️ 編輯</span></button>
+    <button type="button" onclick="saveInvoiceToDb('DRAFT', false)" class="text-xs font-bold text-amber-300 hover:text-white flex flex-col items-center py-1"><span>💾 存草稿</span></button>
+    <button type="button" onclick="saveInvoiceToDb('ISSUED', true)" class="text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-3.5 py-2 rounded-xl shadow-md"><span>🚀 正式發出/預覽</span></button>
+    <button type="button" onclick="switchTab('history')" class="text-xs font-bold text-slate-300 hover:text-white flex flex-col items-center py-1"><span>🗂️ 紀錄庫</span></button>
   </nav>
 
+  <!-- Supabase 設定 Modal -->
   <div id="db-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="flex justify-between items-center border-b pb-3"><h3 class="font-extrabold text-base text-slate-800">⚡ Supabase 資料庫連線設定</h3><button type="button" onclick="closeDbModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button></div>
@@ -560,7 +706,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     </div>
   </div>
 
-  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-blue-950/95 backdrop-blur text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-xl hidden z-50 border border-blue-900"></div>
+  <!-- Toast 提示 -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-blue-950/95 backdrop-blur text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-xl hidden z-50 border border-blue-800 transition-all"></div>
 
   <script>
     const DEFAULT_SUPABASE_URL = 'https://fofplgxpecmbvpnndtiw.supabase.co';
@@ -574,32 +721,70 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
     let supabaseClient = null;
     let currentEditingInvoiceId = null;
+    let currentDocLifecycle = 'DRAFT'; // 'DRAFT' or 'ISSUED'
+
     let currentEditorLogoBase64 = '', currentEditorChopBase64 = '', currentEditorSigBase64 = '', currentEditorQrBase64 = '';
     let currentAdminLogoBase64 = '', currentAdminChopBase64 = '', currentAdminSigBase64 = '', currentAdminQrBase64 = '';
+
     let companiesData = [], clientsData = [], catalogItemsData = [], invoicesHistoryData = [];
     let currentLineItems = [
-      { description: 'Service Fee', amount: 0.00 },
-      { description: 'Labor: 5 hours at $75/hr', amount: 375.00 },
-      { description: 'New client discount', amount: -50.00 },
-      { description: 'Tax (4.25% after discount)', amount: 26.56 }
+      { description: '室內設計及空間規劃服務 (Interior Design & Space Planning)', amount: 15000.00 },
+      { description: '清拆及泥水基礎工程 (Demolition & Masonry Works)', amount: 28000.00 },
+      { description: '客戶特別折扣優惠 (Special Client Discount)', amount: -1500.00 }
     ];
 
     const DEFAULT_COMPANIES_SEED = [
       {
+        id: 'seed_ecdeco',
         name: '迪高室內設計 Ecdeco Company',
         address: '中環皇后大道中222-226號啟煌商業大廈1002室',
         city_zip: "Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK",
         phone: '(852) 9123-4567',
         payment_info: ECDECO_PAYMENT_TERMS,
         logo_base64: '', chop_base64: '', sig_base64: '', qr_base64: ''
+      },
+      {
+        id: 'seed_zhenyi',
+        name: '臻藝設計工程有限公司',
+        address: '中環皇后大道中222-226號啟煌商業大廈1002室',
+        city_zip: "Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK",
+        phone: '(852) 2888-9999',
+        payment_info: ECDECO_PAYMENT_TERMS.replace(/Ecdeco Company/g, '臻藝設計工程有限公司').replace(/迪高室內設計/g, '臻藝設計工程有限公司'),
+        logo_base64: '', chop_base64: '', sig_base64: '', qr_base64: ''
+      },
+      {
+        id: 'seed_fuying',
+        name: '富盈工程營造有限公司',
+        address: '中環皇后大道中222-226號啟煌商業大廈1002室',
+        city_zip: "Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK",
+        phone: '(852) 2345-6789',
+        payment_info: ECDECO_PAYMENT_TERMS.replace(/Ecdeco Company/g, '富盈工程營造有限公司').replace(/迪高室內設計/g, '富盈工程營造有限公司'),
+        logo_base64: '', chop_base64: '', sig_base64: '', qr_base64: ''
       }
     ];
 
+    // ==================== 智慧封裝與解封：免改 SQL 即可將「印章 + 簽名」同步上 Supabase ====================
+    function packChopAndSig(chop, sig) {
+      if (!sig) return chop || '';
+      return JSON.stringify({ __dual_v2: true, chop: chop || '', sig: sig || '' });
+    }
+    function unpackChopAndSig(rawChopField, rawSigField) {
+      if (rawSigField) return { chop: rawChopField || '', sig: rawSigField };
+      if (typeof rawChopField === 'string' && rawChopField.startsWith('{"__dual_v2":true')) {
+        try {
+          const parsed = JSON.parse(rawChopField);
+          return { chop: parsed.chop || '', sig: parsed.sig || '' };
+        } catch (e) {}
+      }
+      return { chop: rawChopField || '', sig: '' };
+    }
+
+    // ==================== PIN 密碼鎖邏輯 ====================
     function isPinUnlocked() {
       try { return sessionStorage.getItem('INV_PIN_UNLOCKED') === 'true'; } catch (e) { return false; }
     }
-    function setPinUnlocked() {
-      try { sessionStorage.setItem('INV_PIN_UNLOCKED', 'true'); } catch (e) {}
+    function setPinUnlocked(val) {
+      try { sessionStorage.setItem('INV_PIN_UNLOCKED', val ? 'true' : 'false'); } catch (e) {}
     }
     function getSavedPin() {
       try { return localStorage.getItem('INV_APP_PIN') || '1668'; } catch (e) { return '1668'; }
@@ -619,7 +804,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       const overlay = document.getElementById('pin-lock-overlay');
       const inputVal = inputEl ? String(inputEl.value).trim() : '';
       if (inputVal === '1668' || inputVal === getSavedPin()) {
-        setPinUnlocked();
+        setPinUnlocked(true);
         if (overlay) { overlay.style.display = 'none'; overlay.classList.add('hidden'); }
         if (errorEl) errorEl.classList.add('hidden');
         showToast('🔓 歡迎回來！系統已解鎖');
@@ -627,6 +812,12 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         if (errorEl) errorEl.classList.remove('hidden');
         if (inputEl) inputEl.value = '';
       }
+    }
+    function lockSystemNow() {
+      setPinUnlocked(false);
+      const inputEl = document.getElementById('pin-input');
+      if (inputEl) inputEl.value = '';
+      checkPinSession();
     }
     function changePinCode() {
       const currentSaved = getSavedPin();
@@ -636,11 +827,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         showToast('✅ 密碼已更新為：' + newPin.trim());
       }
     }
-    function fillEcdecoPaymentTerms() {
-      const el = document.getElementById('comp-payment-info');
-      if (el) { el.value = ECDECO_PAYMENT_TERMS; renderInvoicePreview(); showToast('✅ 已載入迪高標準條款'); }
-    }
 
+    // ==================== 初始化載入 ====================
     window.addEventListener('DOMContentLoaded', async () => {
       checkPinSession();
       document.getElementById('inv-date').value = new Date().toISOString().split('T')[0];
@@ -655,6 +843,12 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
       initSupabase(savedUrl, savedKey);
       await loadAllData();
+
+      // 若是新開頁面且未選擇特定單據，自動計算最新可用單號
+      if (!currentEditingInvoiceId) {
+        assignNextAvailableNumber(true);
+      }
+
       renderEditorLineItems();
       renderInvoicePreview();
       setTimeout(adjustPreviewScale, 60);
@@ -665,7 +859,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       const t = document.getElementById('toast');
       if (!t) return;
       t.textContent = msg; t.classList.remove('hidden');
-      setTimeout(() => t.classList.add('hidden'), 3200);
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => t.classList.add('hidden'), 3400);
     }
 
     function initSupabase(url, key) {
@@ -675,7 +870,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           supabaseClient = window.supabase.createClient(url.trim(), key.trim());
           if (badge) {
             badge.textContent = '🟢 已連通雲端';
-            badge.className = 'ml-2 text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium';
+            badge.className = 'text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium';
           }
         } catch (err) { supabaseClient = null; }
       }
@@ -687,10 +882,13 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       const url = document.getElementById('supabase-url-input').value.trim();
       const key = document.getElementById('supabase-key-input').value.trim();
       try { localStorage.setItem('INV_SUPABASE_URL', url); localStorage.setItem('INV_SUPABASE_KEY', key); } catch (e) {}
-      initSupabase(url, key); closeDbModal(); await loadAllData(); showToast('✅ 已重新同步 Supabase！');
+      initSupabase(url, key); closeDbModal(); await loadAllData(); showToast('✅ 已重新同步 Supabase 雲端資料庫！');
     }
 
+    // ==================== 資料載入與雙向容錯合併 ====================
     async function loadAllData() {
+      let cloudCompanies = [], cloudClients = [], cloudItems = [], cloudInvoices = [];
+
       if (supabaseClient) {
         try {
           const [compRes, cliRes, itemRes, invRes] = await Promise.all([
@@ -699,17 +897,37 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
             supabaseClient.from('catalog_items').select('*').order('created_at', { ascending: false }),
             supabaseClient.from('invoices').select('*').order('created_at', { ascending: false })
           ]);
-          if (!compRes.error) companiesData = compRes.data || [];
-          if (!cliRes.error) clientsData = cliRes.data || [];
-          if (!itemRes.error) catalogItemsData = itemRes.data || [];
-          if (!invRes.error) invoicesHistoryData = invRes.data || [];
-        } catch (e) { console.warn(e); }
+          if (!compRes.error && compRes.data) cloudCompanies = compRes.data;
+          if (!cliRes.error && cliRes.data) cloudClients = cliRes.data;
+          if (!itemRes.error && itemRes.data) cloudItems = itemRes.data;
+          if (!invRes.error && invRes.data) cloudInvoices = invRes.data;
+        } catch (e) { console.warn('Cloud fetch fallback:', e); }
       }
+
+      // 解封公司印章與簽名
+      companiesData = cloudCompanies.map(c => {
+        const unpacked = unpackChopAndSig(c.chop_base64, c.sig_base64);
+        return { ...c, chop_base64: unpacked.chop, sig_base64: unpacked.sig };
+      });
+
       if (companiesData.length === 0) {
         try { companiesData = JSON.parse(localStorage.getItem('LOCAL_COMPANIES') || '[]'); } catch (e) {}
-        if (companiesData.length === 0) companiesData = DEFAULT_COMPANIES_SEED.map((c, i) => ({ id: 'c' + i, ...c }));
+        if (companiesData.length === 0) {
+          companiesData = JSON.parse(JSON.stringify(DEFAULT_COMPANIES_SEED));
+        }
       }
-      populateDropdowns(); renderAdminLists(); renderHistoryList();
+
+      clientsData = cloudClients.length > 0 ? cloudClients : JSON.parse(localStorage.getItem('LOCAL_CLIENTS') || '[]');
+      catalogItemsData = cloudItems.length > 0 ? cloudItems : JSON.parse(localStorage.getItem('LOCAL_ITEMS') || '[]');
+      invoicesHistoryData = cloudInvoices.length > 0 ? cloudInvoices : JSON.parse(localStorage.getItem('LOCAL_INVOICES') || '[]');
+
+      const countBadge = document.getElementById('history-count-badge');
+      if (countBadge) countBadge.textContent = String(invoicesHistoryData.length);
+
+      populateDropdowns();
+      renderAdminLists();
+      renderHistoryList();
+      checkDuplicateNumber();
     }
 
     function populateDropdowns() {
@@ -721,17 +939,90 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       if (itemEl) itemEl.innerHTML = `<option value="">＋ 插入常用收費項目 (${catalogItemsData.length})...</option>` + catalogItemsData.map(i => `<option value="${i.id}">${escapeHtml(i.description)} ($${formatCurrency(i.default_amount)})</option>`).join('');
     }
 
+    // ==================== 單號智能管理與防撞號檢查 ====================
+    function getNextSequentialNumber() {
+      let maxNum = 22;
+      invoicesHistoryData.forEach(inv => {
+        const raw = String(inv.invoice_number || '').replace(/[^0-9]/g, '');
+        const parsed = parseInt(raw, 10);
+        if (!isNaN(parsed) && parsed > maxNum) maxNum = parsed;
+      });
+      return String(maxNum + 1);
+    }
+
+    function assignNextAvailableNumber(silent = false) {
+      const nextNum = getNextSequentialNumber();
+      const input = document.getElementById('inv-number');
+      if (input) input.value = nextNum;
+      checkDuplicateNumber();
+      renderInvoicePreview();
+      if (!silent) showToast(`⚡ 已自動配給最新單號 #${nextNum}`);
+    }
+
+    function checkDuplicateNumber() {
+      const warningEl = document.getElementById('dup-number-warning');
+      const inputEl = document.getElementById('inv-number');
+      if (!warningEl || !inputEl) return;
+
+      const currentVal = inputEl.value.trim();
+      const duplicateInv = invoicesHistoryData.find(inv =>
+        String(inv.invoice_number || '').trim().toLowerCase() === currentVal.toLowerCase() &&
+        String(inv.id) !== String(currentEditingInvoiceId)
+      );
+
+      if (duplicateInv) {
+        const nextNum = getNextSequentialNumber();
+        warningEl.innerHTML = `⚠️ 單號 <strong>#${escapeHtml(currentVal)}</strong> 已存在 (${escapeHtml(duplicateInv.client_snapshot?.name || '舊單')})！<button type="button" onclick="loadInvoiceForEdit('${duplicateInv.id}', false)" class="underline text-blue-800 ml-1 font-bold">載入該單</button> 或 <button type="button" onclick="assignNextAvailableNumber()" class="underline text-emerald-700 ml-1 font-bold">改用新單號 #${nextNum}</button>`;
+        warningEl.classList.remove('hidden');
+      } else {
+        warningEl.classList.add('hidden');
+      }
+    }
+
+    function updateStatusBanner() {
+      const statusBadge = document.getElementById('current-edit-status');
+      const statusDot = document.getElementById('status-dot');
+      const docType = document.getElementById('doc-type')?.value || 'INVOICE';
+      const invNum = document.getElementById('inv-number')?.value || '';
+
+      if (!statusBadge || !statusDot) return;
+
+      if (!currentEditingInvoiceId) {
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse';
+        statusBadge.className = 'text-xs sm:text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800';
+        statusBadge.textContent = `📝 新單據草稿 (${docType} #${invNum} - 尚未存檔)`;
+      } else if (currentDocLifecycle === 'DRAFT') {
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-blue-500';
+        statusBadge.className = 'text-xs sm:text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800';
+        statusBadge.textContent = `💾 已存雲端草稿 (${docType} #${invNum} - 可隨時繼續修改)`;
+      } else {
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-600';
+        statusBadge.className = 'text-xs sm:text-sm font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800';
+        statusBadge.textContent = `✅ 已正式發出 (${docType} #${invNum} - 已存檔至紀錄庫)`;
+      }
+    }
+
+    function handleEditorChange() {
+      updateStatusBanner();
+      renderInvoicePreview();
+    }
+
+    // ==================== 圖片壓縮與上傳 ====================
     function compressImageToBase64(file, callback) {
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
           const canvas = document.createElement('canvas');
-          const maxDim = 340;
+          const maxDim = 360;
           let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) { if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; } else { w = Math.round(w * maxDim / h); h = maxDim; } }
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
           canvas.width = w; canvas.height = h;
-          const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
           callback(canvas.toDataURL('image/png', 0.92));
         };
         img.src = e.target.result;
@@ -746,7 +1037,9 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         if (type === 'chop') currentEditorChopBase64 = base64;
         if (type === 'sig') currentEditorSigBase64 = base64;
         if (type === 'qr') currentEditorQrBase64 = base64;
-        updateEditorImagePreviews(); renderInvoicePreview();
+        updateEditorImagePreviews();
+        renderInvoicePreview();
+        showToast('✅ 圖片已載入！如需永久保存至公司預設，請撳「將當前公司存為預設」');
       });
     }
 
@@ -755,7 +1048,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       if (type === 'chop') currentEditorChopBase64 = '';
       if (type === 'sig') currentEditorSigBase64 = '';
       if (type === 'qr') currentEditorQrBase64 = '';
-      updateEditorImagePreviews(); renderInvoicePreview();
+      updateEditorImagePreviews();
+      renderInvoicePreview();
     }
 
     function updateEditorImagePreviews() {
@@ -780,7 +1074,58 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       currentEditorChopBase64 = comp.chop_base64 || '';
       currentEditorSigBase64 = comp.sig_base64 || '';
       currentEditorQrBase64 = comp.qr_base64 || '';
-      updateEditorImagePreviews(); renderInvoicePreview(); showToast(`🏢 已套用「${comp.name}」資料及印章簽名`);
+      updateEditorImagePreviews();
+      renderInvoicePreview();
+      showToast(`🏢 已切換為「${comp.name}」`);
+    }
+
+    // 在開單頁直接將當前公司、Logo、簽名、印章更新回後台預設
+    async function saveCurrentCompanyToAdmin() {
+      const name = document.getElementById('comp-name').value.trim();
+      if (!name) return alert('請先輸入公司名稱');
+      const existing = companiesData.find(c => c.name.trim().toLowerCase() === name.toLowerCase());
+      const packedChop = packChopAndSig(currentEditorChopBase64, currentEditorSigBase64);
+
+      const dbPayload = {
+        name,
+        phone: document.getElementById('comp-phone').value.trim(),
+        address: document.getElementById('comp-address').value.trim(),
+        city_zip: document.getElementById('comp-city').value.trim(),
+        payment_info: document.getElementById('comp-payment-info').value.trim(),
+        logo_base64: currentEditorLogoBase64,
+        chop_base64: packedChop,
+        qr_base64: currentEditorQrBase64
+      };
+
+      let cloudOk = false;
+      if (supabaseClient) {
+        try {
+          if (existing && !String(existing.id).startsWith('seed_') && !String(existing.id).startsWith('comp_')) {
+            const { error } = await supabaseClient.from('companies').update(dbPayload).eq('id', existing.id);
+            if (!error) cloudOk = true;
+          } else {
+            const { error } = await supabaseClient.from('companies').insert([dbPayload]);
+            if (!error) cloudOk = true;
+          }
+        } catch (e) { console.warn(e); }
+      }
+
+      const localObj = {
+        id: existing ? existing.id : ('comp_' + Date.now()),
+        ...dbPayload,
+        chop_base64: currentEditorChopBase64,
+        sig_base64: currentEditorSigBase64
+      };
+      if (existing) {
+        const idx = companiesData.findIndex(c => String(c.id) === String(existing.id));
+        if (idx > -1) companiesData[idx] = localObj;
+      } else {
+        companiesData.unshift(localObj);
+      }
+      try { localStorage.setItem('LOCAL_COMPANIES', JSON.stringify(companiesData)); } catch (e) {}
+
+      await loadAllData();
+      showToast(`✅ 已將「${name}」連同簽名及印章存為預設公司！`);
     }
 
     function applySelectedClient(clientId) {
@@ -791,9 +1136,36 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       document.getElementById('client-city').value = cli.city_zip || '';
       document.getElementById('client-phone').value = cli.phone || '';
       document.getElementById('client-email').value = cli.email || '';
-      renderInvoicePreview(); showToast(`👤 已載入客戶「${cli.name}」`);
+      renderInvoicePreview();
+      showToast(`👤 已載入客戶「${cli.name}」`);
     }
 
+    async function quickSaveCurrentClient() {
+      const name = document.getElementById('client-name').value.trim();
+      if (!name) return alert('請先輸入客戶姓名');
+      const payload = {
+        name,
+        company_name: document.getElementById('client-company').value.trim(),
+        address: document.getElementById('client-address').value.trim(),
+        city_zip: document.getElementById('client-city').value.trim(),
+        phone: document.getElementById('client-phone').value.trim(),
+        email: document.getElementById('client-email').value.trim()
+      };
+      if (supabaseClient) {
+        try { await supabaseClient.from('clients').insert([payload]); } catch (e) {}
+      }
+      clientsData.unshift({ id: 'cli_' + Date.now(), ...payload });
+      try { localStorage.setItem('LOCAL_CLIENTS', JSON.stringify(clientsData)); } catch (e) {}
+      await loadAllData();
+      showToast(`✅ 已將「${name}」加入常用客戶清單！`);
+    }
+
+    function fillEcdecoPaymentTerms() {
+      const el = document.getElementById('comp-payment-info');
+      if (el) { el.value = ECDECO_PAYMENT_TERMS; renderInvoicePreview(); showToast('✅ 已載入迪高標準中英條款'); }
+    }
+
+    // ==================== 收費項目明細與排序 ====================
     function addCatalogItemToInvoice(itemId) {
       const item = catalogItemsData.find(i => String(i.id) === String(itemId)); if (!item) return;
       addLineItem(item.description, Number(item.default_amount || 0));
@@ -803,19 +1175,45 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       const container = document.getElementById('line-items-container');
       if (!container) return;
       container.innerHTML = currentLineItems.map((item, idx) => `
-        <div class="flex items-center gap-2 bg-slate-50/90 p-2.5 rounded-xl border border-slate-200/80 hover:border-emerald-300 transition">
+        <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-50/90 p-2 rounded-xl border border-slate-200/80 hover:border-emerald-300 transition">
           <span class="text-xs font-mono font-bold text-slate-400 w-5 text-center">${idx + 1}</span>
-          <input type="text" value="${escapeHtml(item.description)}" placeholder="項目說明 (Description)" oninput="updateLineItem(${idx}, 'description', this.value)" class="flex-1 border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:border-emerald-600 outline-none" />
-          <input type="number" step="0.01" value="${item.amount}" placeholder="金額" oninput="updateLineItem(${idx}, 'amount', this.value)" class="w-32 border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-right bg-white font-mono font-semibold focus:border-emerald-600 outline-none" />
-          <button type="button" onclick="removeLineItem(${idx})" class="text-slate-400 hover:text-red-500 hover:bg-red-50 px-2 py-1 rounded-lg text-sm font-bold transition">✕</button>
+          <input type="text" value="${escapeHtml(item.description)}" placeholder="工程/收費項目說明 (Description)" oninput="updateLineItem(${idx}, 'description', this.value)" class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm bg-white focus:border-emerald-600 outline-none" />
+          <input type="number" step="0.01" value="${item.amount}" placeholder="金額" oninput="updateLineItem(${idx}, 'amount', this.value)" class="w-28 sm:w-32 border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm text-right bg-white font-mono font-semibold focus:border-emerald-600 outline-none" />
+          <div class="flex items-center">
+            <button type="button" onclick="moveLineItem(${idx}, -1)" class="text-slate-400 hover:text-slate-700 px-1 py-1 text-xs" title="上移">↑</button>
+            <button type="button" onclick="moveLineItem(${idx}, 1)" class="text-slate-400 hover:text-slate-700 px-1 py-1 text-xs" title="下移">↓</button>
+            <button type="button" onclick="removeLineItem(${idx})" class="text-slate-400 hover:text-red-500 hover:bg-red-50 px-1.5 py-1 rounded-lg text-xs font-bold transition" title="刪除">✕</button>
+          </div>
         </div>
       `).join('');
       updateTotalDisplay();
     }
 
-    function addLineItem(desc = '', amount = 0) { currentLineItems.push({ description: desc, amount: Number(amount) }); renderEditorLineItems(); renderInvoicePreview(); }
-    function updateLineItem(idx, field, val) { if (field === 'amount') currentLineItems[idx].amount = parseFloat(val) || 0; else currentLineItems[idx].description = val; updateTotalDisplay(); renderInvoicePreview(); }
-    function removeLineItem(idx) { currentLineItems.splice(idx, 1); renderEditorLineItems(); renderInvoicePreview(); }
+    function addLineItem(desc = '', amount = 0) {
+      currentLineItems.push({ description: desc, amount: Number(amount) });
+      renderEditorLineItems();
+      renderInvoicePreview();
+    }
+    function updateLineItem(idx, field, val) {
+      if (field === 'amount') currentLineItems[idx].amount = parseFloat(val) || 0;
+      else currentLineItems[idx].description = val;
+      updateTotalDisplay();
+      renderInvoicePreview();
+    }
+    function moveLineItem(idx, dir) {
+      const target = idx + dir;
+      if (target < 0 || target >= currentLineItems.length) return;
+      const temp = currentLineItems[idx];
+      currentLineItems[idx] = currentLineItems[target];
+      currentLineItems[target] = temp;
+      renderEditorLineItems();
+      renderInvoicePreview();
+    }
+    function removeLineItem(idx) {
+      currentLineItems.splice(idx, 1);
+      renderEditorLineItems();
+      renderInvoicePreview();
+    }
     function calculateSubtotal() { return currentLineItems.reduce((acc, item) => acc + (Number(item.amount) || 0), 0); }
     function getDepositPaid() { return parseFloat(document.getElementById('deposit-paid-input')?.value) || 0; }
     function calculateTotal() { return calculateSubtotal() - getDepositPaid(); }
@@ -827,8 +1225,14 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     }
     function formatCurrency(val) { const num = Number(val) || 0; if (num < 0) return `(${Math.abs(num).toFixed(2)})`; return num.toFixed(2); }
     function formatDateMMDDYYYY(isoDate) { if (!isoDate) return ''; const parts = isoDate.split('-'); if (parts.length !== 3) return isoDate; return `${parts[1]}/${parts[2]}/${parts[0]}`; }
-    function quickConvertDocType(type) { document.getElementById('doc-type').value = type; if (type === 'RECEIPT') document.getElementById('payment-status').value = 'PAID'; renderInvoicePreview(); showToast(`✨ 已切換為 ${type}`); }
+    function quickConvertDocType(type) {
+      document.getElementById('doc-type').value = type;
+      if (type === 'RECEIPT') document.getElementById('payment-status').value = 'PAID';
+      handleEditorChange();
+      showToast(`✨ 已切換單據為 ${type}`);
+    }
 
+    // ==================== A4 預覽動態渲染 (自適應 Logo 尺寸、公司名、左簽名右印章) ====================
     function renderInvoicePreview() {
       const docTypeEl = document.getElementById('doc-type');
       const payStatusEl = document.getElementById('payment-status');
@@ -843,23 +1247,61 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
       const paidStamp = document.getElementById('inv-render-paid-stamp');
       if (paidStamp) {
-        if (payStatus === 'PAID' || docType === 'RECEIPT') paidStamp.classList.remove('hidden'); else paidStamp.classList.add('hidden');
+        if (payStatus === 'PAID' || docType === 'RECEIPT') paidStamp.classList.remove('hidden');
+        else paidStamp.classList.add('hidden');
       }
 
+      // 動態適應 Logo 尺寸與公司名稱排版
       const logoBox = document.getElementById('inv-render-logo-box');
-      if (currentEditorLogoBase64) {
-        const img = document.getElementById('inv-render-logo');
-        if (img) img.src = currentEditorLogoBase64;
-        if (logoBox) logoBox.classList.remove('hidden');
+      const logoImg = document.getElementById('inv-render-logo');
+      const brandWrapper = document.getElementById('inv-render-brand-wrapper');
+      const sizeMode = document.getElementById('logo-size-mode')?.value || 'md';
+      const compNameStr = document.getElementById('comp-name').value || '[Company Name]';
+      const cNameEl = document.getElementById('inv-render-comp-name');
+
+      if (currentEditorLogoBase64 && logoImg && logoBox) {
+        logoImg.src = currentEditorLogoBase64;
+        logoBox.classList.remove('hidden');
+        if (sizeMode === 'sm') {
+          logoImg.style.maxHeight = '45px';
+          logoImg.style.maxWidth = '180px';
+          brandWrapper.className = 'flex flex-col items-start w-full';
+        } else if (sizeMode === 'lg') {
+          logoImg.style.maxHeight = '88px';
+          logoImg.style.maxWidth = '280px';
+          brandWrapper.className = 'flex flex-col items-start w-full';
+        } else if (sizeMode === 'inline') {
+          logoImg.style.maxHeight = '56px';
+          logoImg.style.maxWidth = '120px';
+          brandWrapper.className = 'flex flex-row items-center gap-3 w-full mb-1';
+        } else {
+          logoImg.style.maxHeight = '65px';
+          logoImg.style.maxWidth = '230px';
+          brandWrapper.className = 'flex flex-col items-start w-full';
+        }
       } else {
         if (logoBox) logoBox.classList.add('hidden');
+        if (brandWrapper) brandWrapper.className = 'flex flex-col items-start w-full';
       }
 
-      const cName = document.getElementById('inv-render-comp-name');
+      // 根據公司名稱字數自動微調字體大小，防止撞到右邊 INVOICE 表格
+      if (cNameEl) {
+        cNameEl.textContent = compNameStr;
+        if (compNameStr.length > 26) {
+          cNameEl.className = 'text-[17px] font-extrabold text-slate-900 mb-1 leading-snug tracking-tight break-words';
+        } else if (compNameStr.length > 18) {
+          cNameEl.className = 'text-[19px] font-extrabold text-slate-900 mb-1 leading-snug tracking-tight break-words';
+        } else {
+          cNameEl.className = 'text-[22px] font-extrabold text-slate-900 mb-1 leading-snug tracking-tight break-words';
+        }
+      }
+
+      const forCompEl = document.getElementById('inv-render-for-company');
+      if (forCompEl) forCompEl.textContent = `For and on behalf of ${compNameStr}`;
+
       const cAddr = document.getElementById('inv-render-comp-address');
       const cCity = document.getElementById('inv-render-comp-city');
       const cPhone = document.getElementById('inv-render-comp-phone');
-      if (cName) cName.textContent = document.getElementById('comp-name').value || '[Company Name]';
       if (cAddr) cAddr.textContent = document.getElementById('comp-address').value || '';
       if (cCity) cCity.textContent = document.getElementById('comp-city').value || '';
       const phoneVal = document.getElementById('comp-phone').value;
@@ -912,32 +1354,65 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         if (qrBox) qrBox.classList.add('hidden');
       }
 
-      // 簽名在左、印章在右
+      // 簽名在左 (sigWrap)、印章在右 (chopWrap)
+      const sigWrap = document.getElementById('inv-render-sig-wrap');
       const sigImg = document.getElementById('inv-render-sig');
       const showSig = document.getElementById('show-sig-checkbox');
-      if (sigImg && showSig && showSig.checked && currentEditorSigBase64) {
-        sigImg.src = currentEditorSigBase64; sigImg.classList.remove('hidden');
-      } else if (sigImg) { sigImg.classList.add('hidden'); }
+      if (sigWrap && sigImg && showSig && showSig.checked && currentEditorSigBase64) {
+        sigImg.src = currentEditorSigBase64;
+        sigWrap.classList.remove('hidden');
+      } else if (sigWrap) {
+        sigWrap.classList.add('hidden');
+      }
 
+      const chopWrap = document.getElementById('inv-render-chop-wrap');
       const chopImg = document.getElementById('inv-render-chop');
       const showChop = document.getElementById('show-chop-checkbox');
-      if (chopImg && showChop && showChop.checked && currentEditorChopBase64) {
-        chopImg.src = currentEditorChopBase64; chopImg.classList.remove('hidden');
-      } else if (chopImg) { chopImg.classList.add('hidden'); }
+      if (chopWrap && chopImg && showChop && showChop.checked && currentEditorChopBase64) {
+        chopImg.src = currentEditorChopBase64;
+        chopWrap.classList.remove('hidden');
+      } else if (chopWrap) {
+        chopWrap.classList.add('hidden');
+      }
     }
 
-    async function saveInvoiceToDb(isFormalIssue = false) {
+    // ==================== 儲存草稿 vs 正式發出邏輯 (絕不亂跳單號) ====================
+    async function saveInvoiceToDb(targetLifecycle = 'DRAFT', goPreviewAfter = false) {
       const docType = document.getElementById('doc-type').value || 'INVOICE';
       const payStatus = document.getElementById('payment-status').value || 'UNPAID';
       const currentNum = document.getElementById('inv-number').value.trim() || '001';
+      currentDocLifecycle = targetLifecycle;
 
       const payload = {
         invoice_number: currentNum,
         invoice_date: document.getElementById('inv-date').value,
-        doc_type: docType, payment_status: payStatus, deposit_paid: getDepositPaid(),
-        company_snapshot: { name: document.getElementById('comp-name').value, address: document.getElementById('comp-address').value, city_zip: document.getElementById('comp-city').value, phone: document.getElementById('comp-phone').value, payment_info: document.getElementById('comp-payment-info').value, logo_base64: currentEditorLogoBase64, chop_base64: currentEditorChopBase64, sig_base64: currentEditorSigBase64, qr_base64: currentEditorQrBase64 },
-        client_snapshot: { name: document.getElementById('client-name').value, company_name: document.getElementById('client-company').value, address: document.getElementById('client-address').value, city_zip: document.getElementById('client-city').value, phone: document.getElementById('client-phone').value, email: document.getElementById('client-email').value },
-        line_items: currentLineItems, total_amount: calculateTotal(), updated_at: new Date().toISOString()
+        doc_type: docType,
+        payment_status: payStatus,
+        deposit_paid: getDepositPaid(),
+        company_snapshot: {
+          name: document.getElementById('comp-name').value,
+          address: document.getElementById('comp-address').value,
+          city_zip: document.getElementById('comp-city').value,
+          phone: document.getElementById('comp-phone').value,
+          payment_info: document.getElementById('comp-payment-info').value,
+          logo_base64: currentEditorLogoBase64,
+          chop_base64: currentEditorChopBase64,
+          sig_base64: currentEditorSigBase64,
+          qr_base64: currentEditorQrBase64,
+          logo_size_mode: document.getElementById('logo-size-mode')?.value || 'md',
+          doc_lifecycle: currentDocLifecycle
+        },
+        client_snapshot: {
+          name: document.getElementById('client-name').value,
+          company_name: document.getElementById('client-company').value,
+          address: document.getElementById('client-address').value,
+          city_zip: document.getElementById('client-city').value,
+          phone: document.getElementById('client-phone').value,
+          email: document.getElementById('client-email').value
+        },
+        line_items: currentLineItems,
+        total_amount: calculateTotal(),
+        updated_at: new Date().toISOString()
       };
 
       let savedCloud = false;
@@ -955,7 +1430,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
       if (!savedCloud) {
         if (currentEditingInvoiceId) {
-          const idx = invoicesHistoryData.findIndex(i => i.id === currentEditingInvoiceId);
+          const idx = invoicesHistoryData.findIndex(i => String(i.id) === String(currentEditingInvoiceId));
           if (idx > -1) invoicesHistoryData[idx] = { ...invoicesHistoryData[idx], ...payload };
         } else {
           currentEditingInvoiceId = 'inv_' + Date.now();
@@ -964,95 +1439,119 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         try { localStorage.setItem('LOCAL_INVOICES', JSON.stringify(invoicesHistoryData)); } catch (e) {}
       }
 
-      const editStat = document.getElementById('current-edit-status');
-      if (editStat) editStat.textContent = `已正式發出 ${docType} #${currentNum}`;
-
-      if (isFormalIssue) {
-        // 自動記憶並將下張單號加 1
-        const numericPart = parseInt(currentNum.replace(/[^0-9]/g, ''));
-        const nextNum = !isNaN(numericPart) ? String(numericPart + 1) : String(Number(currentNum) + 1 || '24');
-        showToast(`🚀 ${docType} #${currentNum} 已正式發出並儲存！自動開新單 #${nextNum}`);
-        
-        // 延遲 1 秒自動開新單並帶入下一個單號
-        setTimeout(() => {
-          currentEditingInvoiceId = null;
-          document.getElementById('inv-number').value = nextNum;
-          if (editStat) editStat.textContent = '新單據草稿';
-        }, 800);
-      } else {
-        showToast(`💾 存入草稿成功 (單號 #${currentNum})`);
-      }
       await loadAllData();
+      updateStatusBanner();
+
+      if (targetLifecycle === 'ISSUED') {
+        showToast(`🚀 ${docType} #${currentNum} 已正式發出並存入雲端紀錄庫！`);
+      } else {
+        showToast(`💾 草稿 #${currentNum} 已儲存！你可以隨時繼續修改內容`);
+      }
+
+      if (goPreviewAfter) {
+        switchTab('preview');
+      }
     }
 
     function resetNewInvoice() {
-      currentEditingInvoiceId = null; 
-      const editStat = document.getElementById('current-edit-status');
-      if (editStat) editStat.textContent = '新單據草稿';
-      
-      // 自動推算下一張單號
-      let nextNum = '24';
-      if (invoicesHistoryData.length > 0) {
-        const lastNumStr = invoicesHistoryData[0].invoice_number || '23';
-        const numPart = parseInt(lastNumStr.replace(/[^0-9]/g, ''));
-        if (!isNaN(numPart)) nextNum = String(numPart + 1);
-      }
+      currentEditingInvoiceId = null;
+      currentDocLifecycle = 'DRAFT';
+      const nextNum = getNextSequentialNumber();
       document.getElementById('inv-number').value = nextNum;
       document.getElementById('inv-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('doc-type').value = 'INVOICE'; document.getElementById('payment-status').value = 'UNPAID';
-      document.getElementById('deposit-paid-input').value = 0; currentLineItems = [{ description: 'Service Fee', amount: 0 }];
-      renderEditorLineItems(); renderInvoicePreview(); showToast(`已開新空白單，編號自動帶出 #${nextNum}`);
+      document.getElementById('doc-type').value = 'INVOICE';
+      document.getElementById('payment-status').value = 'UNPAID';
+      document.getElementById('deposit-paid-input').value = 0;
+      currentLineItems = [{ description: '', amount: 0 }];
+      renderEditorLineItems();
+      updateStatusBanner();
+      checkDuplicateNumber();
+      renderInvoicePreview();
+      switchTab('editor');
+      showToast(`➕ 已開啟新單據，自動配給最新單號 #${nextNum}`);
     }
 
     function loadInvoiceForEdit(invId, goPreview = false, overrideDocType = null) {
       const inv = invoicesHistoryData.find(i => String(i.id) === String(invId)); if (!inv) return;
-      currentEditingInvoiceId = inv.id; const docType = overrideDocType || inv.doc_type || 'INVOICE';
+      currentEditingInvoiceId = inv.id;
+      const comp = inv.company_snapshot || {};
+      currentDocLifecycle = comp.doc_lifecycle || 'ISSUED';
+
+      const docType = overrideDocType || inv.doc_type || 'INVOICE';
       document.getElementById('doc-type').value = docType;
       document.getElementById('payment-status').value = overrideDocType === 'RECEIPT' ? 'PAID' : (inv.payment_status || 'UNPAID');
       document.getElementById('deposit-paid-input').value = inv.deposit_paid || 0;
-      const editStat = document.getElementById('current-edit-status');
-      if (editStat) editStat.textContent = `正在編輯 ${docType} #${inv.invoice_number}`;
       document.getElementById('inv-number').value = inv.invoice_number || '';
       document.getElementById('inv-date').value = inv.invoice_date || '';
-      const comp = inv.company_snapshot || {};
-      document.getElementById('comp-name').value = comp.name || ''; document.getElementById('comp-address').value = comp.address || '';
-      document.getElementById('comp-city').value = comp.city_zip || ''; document.getElementById('comp-phone').value = comp.phone || '';
+
+      document.getElementById('comp-name').value = comp.name || '';
+      document.getElementById('comp-address').value = comp.address || '';
+      document.getElementById('comp-city').value = comp.city_zip || '';
+      document.getElementById('comp-phone').value = comp.phone || '';
       document.getElementById('comp-payment-info').value = comp.payment_info || ECDECO_PAYMENT_TERMS;
+      if (comp.logo_size_mode && document.getElementById('logo-size-mode')) {
+        document.getElementById('logo-size-mode').value = comp.logo_size_mode;
+      }
+
+      const unpacked = unpackChopAndSig(comp.chop_base64, comp.sig_base64);
       currentEditorLogoBase64 = comp.logo_base64 || '';
-      currentEditorChopBase64 = comp.chop_base64 || '';
-      currentEditorSigBase64 = comp.sig_base64 || '';
+      currentEditorChopBase64 = unpacked.chop || '';
+      currentEditorSigBase64 = unpacked.sig || '';
       currentEditorQrBase64 = comp.qr_base64 || '';
       updateEditorImagePreviews();
+
       const cli = inv.client_snapshot || {};
-      document.getElementById('client-name').value = cli.name || ''; document.getElementById('client-company').value = cli.company_name || '';
-      document.getElementById('client-address').value = cli.address || ''; document.getElementById('client-city').value = cli.city_zip || '';
-      document.getElementById('client-phone').value = cli.phone || ''; document.getElementById('client-email').value = cli.email || '';
+      document.getElementById('client-name').value = cli.name || '';
+      document.getElementById('client-company').value = cli.company_name || '';
+      document.getElementById('client-address').value = cli.address || '';
+      document.getElementById('client-city').value = cli.city_zip || '';
+      document.getElementById('client-phone').value = cli.phone || '';
+      document.getElementById('client-email').value = cli.email || '';
+
       currentLineItems = Array.isArray(inv.line_items) ? JSON.parse(JSON.stringify(inv.line_items)) : [];
-      renderEditorLineItems(); renderInvoicePreview(); switchTab(goPreview ? 'preview' : 'editor');
+      renderEditorLineItems();
+      updateStatusBanner();
+      checkDuplicateNumber();
+      renderInvoicePreview();
+      switchTab(goPreview ? 'preview' : 'editor');
+      showToast(`📂 已載入 ${docType} #${inv.invoice_number}`);
     }
 
     async function toggleInvoicePayStatus(invId, nextStatus) {
       const inv = invoicesHistoryData.find(i => String(i.id) === String(invId)); if (!inv) return;
       inv.payment_status = nextStatus;
-      if (supabaseClient && !String(invId).startsWith('inv_')) { await supabaseClient.from('invoices').update({ payment_status: nextStatus }).eq('id', invId); }
+      if (supabaseClient && !String(invId).startsWith('inv_')) {
+        await supabaseClient.from('invoices').update({ payment_status: nextStatus }).eq('id', invId);
+      }
       try { localStorage.setItem('LOCAL_INVOICES', JSON.stringify(invoicesHistoryData)); } catch (e) {}
-      await loadAllData(); showToast(`已更新單據狀態為 ${nextStatus}`);
+      await loadAllData();
+      showToast(`💰 已更新單據狀態為 ${nextStatus}`);
     }
 
     async function deleteSavedInvoice(invId) {
       if (!confirm('確定要永久刪除呢張單據紀錄嗎？')) return;
-      if (supabaseClient && !String(invId).startsWith('inv_')) { await supabaseClient.from('invoices').delete().eq('id', invId); }
+      if (supabaseClient && !String(invId).startsWith('inv_')) {
+        await supabaseClient.from('invoices').delete().eq('id', invId);
+      }
       invoicesHistoryData = invoicesHistoryData.filter(i => String(i.id) !== String(invId));
       try { localStorage.setItem('LOCAL_INVOICES', JSON.stringify(invoicesHistoryData)); } catch (e) {}
-      await loadAllData(); showToast('已刪除單據');
+      if (String(currentEditingInvoiceId) === String(invId)) {
+        currentEditingInvoiceId = null;
+        updateStatusBanner();
+      }
+      await loadAllData();
+      showToast('🗑️ 已刪除單據');
     }
 
     function renderHistoryList() {
       let totalInvoiced = 0, totalPaid = 0, totalUnpaid = 0;
       invoicesHistoryData.forEach(inv => {
-        if ((inv.doc_type || 'INVOICE') !== 'QUOTATION') {
-          const amt = Number(inv.total_amount) || 0; totalInvoiced += amt;
-          if (inv.payment_status === 'PAID') totalPaid += amt; else totalUnpaid += amt;
+        const lifecycle = inv.company_snapshot?.doc_lifecycle || 'ISSUED';
+        if ((inv.doc_type || 'INVOICE') !== 'QUOTATION' && lifecycle !== 'DRAFT') {
+          const amt = Number(inv.total_amount) || 0;
+          totalInvoiced += amt;
+          if (inv.payment_status === 'PAID') totalPaid += amt;
+          else totalUnpaid += amt;
         }
       });
       const ti = document.getElementById('stat-total-invoiced');
@@ -1066,28 +1565,58 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       if (!box) return;
       const statusFilter = document.getElementById('history-filter-status')?.value || 'ALL';
       const keyword = (document.getElementById('history-search')?.value || '').toLowerCase();
+
       const filtered = invoicesHistoryData.filter(inv => {
-        const matchStatus = statusFilter === 'ALL' || (inv.payment_status || 'UNPAID') === statusFilter;
-        const num = (inv.invoice_number || '').toLowerCase(); const cli = (inv.client_snapshot?.name || '').toLowerCase();
-        return matchStatus && (num.includes(keyword) || cli.includes(keyword));
+        const lifecycle = inv.company_snapshot?.doc_lifecycle || 'ISSUED';
+        const matchStatus =
+          statusFilter === 'ALL' ? true :
+          statusFilter === 'DRAFT' ? lifecycle === 'DRAFT' :
+          (inv.payment_status || 'UNPAID') === statusFilter;
+        const num = (inv.invoice_number || '').toLowerCase();
+        const cli = (inv.client_snapshot?.name || '').toLowerCase();
+        const comp = (inv.client_snapshot?.company_name || '').toLowerCase();
+        return matchStatus && (num.includes(keyword) || cli.includes(keyword) || comp.includes(keyword));
       });
-      if (filtered.length === 0) { box.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm">暫無符合條件嘅單據紀錄</div>`; return; }
+
+      if (filtered.length === 0) {
+        box.innerHTML = `<div class="text-center py-10 text-slate-400 text-sm">暫無符合條件嘅單據紀錄</div>`;
+        return;
+      }
+
       box.innerHTML = filtered.map(inv => {
-        const dtype = inv.doc_type || 'INVOICE', pstatus = inv.payment_status || 'UNPAID';
-        const statusBadge = pstatus === 'PAID' ? `<span onclick="toggleInvoicePayStatus('${inv.id}','UNPAID')" class="cursor-pointer text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">🟢 已付清</span>` : `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full font-bold">🔴 未付款 (點此改已付)</span>`;
+        const dtype = inv.doc_type || 'INVOICE';
+        const pstatus = inv.payment_status || 'UNPAID';
+        const lifecycle = inv.company_snapshot?.doc_lifecycle || 'ISSUED';
+        const lifecycleBadge = lifecycle === 'DRAFT'
+          ? `<span class="text-xs bg-amber-100 text-amber-800 border border-amber-300 px-2 py-0.5 rounded-full font-bold">📝 草稿</span>`
+          : `<span class="text-xs bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded-full font-semibold">✅ 已發出</span>`;
+
+        const statusBadge = pstatus === 'PAID'
+          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','UNPAID')" class="cursor-pointer text-xs bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold">🟢 已付清</span>`
+          : pstatus === 'PARTIAL'
+          ? `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold">🟡 部分付款</span>`
+          : `<span onclick="toggleInvoicePayStatus('${inv.id}','PAID')" class="cursor-pointer text-xs bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full font-bold">🔴 未付款 (點此改已付)</span>`;
+
         return `
           <div class="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl border border-slate-200/90 hover:border-emerald-400 bg-white shadow-sm transition">
             <div class="space-y-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-900 border border-blue-200">${dtype} #${escapeHtml(inv.invoice_number)}</span>
-                ${statusBadge}<span class="text-xs text-slate-400 font-mono">${escapeHtml(inv.invoice_date)}</span>
+                <span class="text-xs font-extrabold px-2.5 py-0.5 rounded-lg bg-slate-900 text-white font-mono">${dtype} #${escapeHtml(inv.invoice_number)}</span>
+                ${lifecycleBadge}
+                ${statusBadge}
+                <span class="text-xs text-slate-400 font-mono">${escapeHtml(inv.invoice_date)}</span>
               </div>
-              <div class="text-xs text-slate-600">客戶：<strong class="text-slate-900">${escapeHtml(inv.client_snapshot?.name || '未填寫')}</strong></div>
+              <div class="text-xs text-slate-600">
+                客戶：<strong class="text-slate-900">${escapeHtml(inv.client_snapshot?.name || '未填寫')}</strong>
+                ${inv.client_snapshot?.company_name ? `(${escapeHtml(inv.client_snapshot.company_name)})` : ''}
+                <span class="text-slate-400 ml-2">| 開單公司：${escapeHtml(inv.company_snapshot?.name || '')}</span>
+              </div>
             </div>
             <div class="flex flex-wrap items-center gap-1.5">
               <span class="font-extrabold text-slate-900 text-base mr-2 font-mono">$${formatCurrency(inv.total_amount)}</span>
-              <button type="button" onclick="loadInvoiceForEdit('${inv.id}', false)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">✏️ 編輯</button>
-              <button type="button" onclick="loadInvoiceForEdit('${inv.id}', true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">📄 PDF</button>
+              <button type="button" onclick="loadInvoiceForEdit('${inv.id}', false)" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-xl font-semibold">✏️ 繼續編輯</button>
+              <button type="button" onclick="loadInvoiceForEdit('${inv.id}', true, 'RECEIPT')" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-xl font-semibold">🧾 轉收據</button>
+              <button type="button" onclick="loadInvoiceForEdit('${inv.id}', true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-semibold shadow-sm">📄 預覽 / PDF</button>
               <button type="button" onclick="deleteSavedInvoice('${inv.id}')" class="text-xs text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-xl">🗑️</button>
             </div>
           </div>
@@ -1095,36 +1624,61 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       }).join('');
     }
 
+    // ==================== 生成 PDF 及直送 WhatsApp ====================
     async function generatePdfBlobAndFile() {
       const paper = document.getElementById('invoice-print-area');
-      const prevTransform = paper.style.transform; paper.style.transform = 'scale(1)';
+      const prevTransform = paper.style.transform;
+      paper.style.transform = 'scale(1)';
       const canvas = await html2canvas(paper, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
       paper.style.transform = prevTransform;
+
       const imgData = canvas.toDataURL('image/jpeg', 0.96);
-      const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
       const docType = document.getElementById('doc-type').value || 'Invoice';
       const invNum = document.getElementById('inv-number').value.trim() || '001';
       const fileName = `${docType}_${invNum}.pdf`;
       return { pdf, pdfFile: new File([pdf.output('blob')], fileName, { type: 'application/pdf' }), fileName, invNum, docType };
     }
 
-    async function downloadInvoicePdf() { showToast('⏳ 正在生成高清 PDF...'); await saveInvoiceToDb(false); const { pdf, fileName } = await generatePdfBlobAndFile(); pdf.save(fileName); showToast('✅ PDF 已下載！'); }
+    async function downloadInvoicePdf() {
+      showToast('⏳ 正在存檔並生成高清 A4 PDF...');
+      await saveInvoiceToDb('ISSUED', false);
+      const { pdf, fileName } = await generatePdfBlobAndFile();
+      pdf.save(fileName);
+      showToast('✅ 單據已正式存檔並下載 PDF！');
+    }
+
     async function sharePdfToWhatsApp() {
-      showToast('⏳ 正在生成 PDF 傳送...'); await saveInvoiceToDb(false); const { pdf, pdfFile, fileName, invNum, docType } = await generatePdfBlobAndFile();
+      showToast('⏳ 正在正式存檔並準備傳送至 WhatsApp...');
+      await saveInvoiceToDb('ISSUED', false);
+      const { pdf, pdfFile, fileName, invNum, docType } = await generatePdfBlobAndFile();
       const clientName = document.getElementById('client-name').value.trim() || '客戶';
       const compName = document.getElementById('comp-name').value.trim() || '本公司';
       const totalStr = '$' + formatCurrency(calculateTotal());
       const rawPhone = (document.getElementById('client-phone').value || '').replace(/[^0-9]/g, '');
-      const waMessage = `你好 ${clientName}，這是來自 ${compName} 的 ${docType} (編號: #${invNum})，應付結餘為 ${totalStr}，請查收 PDF。`;
-      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-        try { await navigator.share({ title: `${docType} #${invNum}`, text: waMessage, files: [pdfFile] }); return; } catch (err) { if (err.name === 'AbortError') return; }
-      }
-      pdf.save(fileName); window.open(`https://wa.me/${rawPhone}?text=` + encodeURIComponent(waMessage), '_blank');
-    }
-    async function saveAndPrint() { await saveInvoiceToDb(false); window.print(); }
+      const waMessage = `你好 ${clientName}，這是來自 ${compName} 的 ${docType} (編號: #${invNum})，應付結餘為 ${totalStr}，請查收附件 PDF。`;
 
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        try {
+          await navigator.share({ title: `${docType} #${invNum}`, text: waMessage, files: [pdfFile] });
+          return;
+        } catch (err) { if (err.name === 'AbortError') return; }
+      }
+      pdf.save(fileName);
+      window.open(`https://wa.me/${rawPhone}?text=` + encodeURIComponent(waMessage), '_blank');
+    }
+
+    async function saveAndPrint() {
+      await saveInvoiceToDb('ISSUED', false);
+      window.print();
+    }
+
+    // ==================== 後台資料管理 CRUD (修復編輯按鈕與自動捲動聚焦) ====================
     function handleAdminImageUpload(e, type) {
       const file = e.target.files[0]; if (!file) return;
       compressImageToBase64(file, (base64) => {
@@ -1136,54 +1690,108 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     }
 
     async function saveCompanyProfile() {
-      const id = document.getElementById('admin-comp-id').value; const name = document.getElementById('admin-comp-name').value.trim();
+      const id = document.getElementById('admin-comp-id').value;
+      const name = document.getElementById('admin-comp-name').value.trim();
       if (!name) return alert('請輸入公司名稱');
-      const payload = {
+
+      // 將印章與簽名封裝入 chop_base64 欄位，100% 兼容現有 Supabase companies 表結構
+      const packedChop = packChopAndSig(currentAdminChopBase64, currentAdminSigBase64);
+
+      const dbPayload = {
         name,
         phone: document.getElementById('admin-comp-phone').value.trim(),
         address: document.getElementById('admin-comp-address').value.trim(),
         city_zip: document.getElementById('admin-comp-city').value.trim(),
         payment_info: document.getElementById('admin-comp-payment').value.trim(),
         logo_base64: currentAdminLogoBase64,
-        chop_base64: currentAdminChopBase64,
-        sig_base64: currentAdminSigBase64,
+        chop_base64: packedChop,
         qr_base64: currentAdminQrBase64
       };
-      if (supabaseClient && (!id || !String(id).startsWith('c'))) {
-        if (id) await supabaseClient.from('companies').update(payload).eq('id', id); else await supabaseClient.from('companies').insert([payload]);
-      } else {
-        if (id) { const idx = companiesData.findIndex(c => String(c.id) === String(id)); if (idx > -1) companiesData[idx] = { ...companiesData[idx], ...payload }; }
-        else { companiesData.unshift({ id: 'comp_' + Date.now(), ...payload }); }
-        try { localStorage.setItem('LOCAL_COMPANIES', JSON.stringify(companiesData)); } catch (e) {}
+
+      let savedCloud = false;
+      if (supabaseClient) {
+        try {
+          if (id && !String(id).startsWith('seed_') && !String(id).startsWith('comp_')) {
+            const { error } = await supabaseClient.from('companies').update(dbPayload).eq('id', id);
+            if (!error) savedCloud = true;
+          } else {
+            const { data, error } = await supabaseClient.from('companies').insert([dbPayload]).select().single();
+            if (!error && data) savedCloud = true;
+          }
+        } catch (e) { console.warn(e); }
       }
-      resetAdminCompanyForm(); await loadAllData(); showToast('✅ 公司資料已儲存！');
+
+      const localEntry = {
+        id: id || ('comp_' + Date.now()),
+        ...dbPayload,
+        chop_base64: currentAdminChopBase64,
+        sig_base64: currentAdminSigBase64
+      };
+
+      if (id) {
+        const idx = companiesData.findIndex(c => String(c.id) === String(id));
+        if (idx > -1) companiesData[idx] = localEntry;
+      } else {
+        companiesData.unshift(localEntry);
+      }
+      try { localStorage.setItem('LOCAL_COMPANIES', JSON.stringify(companiesData)); } catch (e) {}
+
+      resetAdminCompanyForm();
+      await loadAllData();
+      showToast(`✅ 公司「${name}」資料、簽名及印章已成功儲存！`);
     }
 
     function editCompanyProfile(id) {
-      const c = companiesData.find(x => String(x.id) === String(id)); if (!c) return;
+      const c = companiesData.find(x => String(x.id) === String(id));
+      if (!c) {
+        showToast('⚠️ 找不到該公司資料');
+        return;
+      }
+      switchTab('admin');
       document.getElementById('admin-comp-id').value = c.id;
       document.getElementById('admin-comp-name').value = c.name || '';
       document.getElementById('admin-comp-phone').value = c.phone || '';
       document.getElementById('admin-comp-address').value = c.address || '';
       document.getElementById('admin-comp-city').value = c.city_zip || '';
       document.getElementById('admin-comp-payment').value = c.payment_info || '';
+
+      const unpacked = unpackChopAndSig(c.chop_base64, c.sig_base64);
       currentAdminLogoBase64 = c.logo_base64 || '';
-      currentAdminChopBase64 = c.chop_base64 || '';
-      currentAdminSigBase64 = c.sig_base64 || '';
+      currentAdminChopBase64 = unpacked.chop || '';
+      currentAdminSigBase64 = unpacked.sig || '';
       currentAdminQrBase64 = c.qr_base64 || '';
+
       document.getElementById('admin-logo-preview').innerHTML = currentAdminLogoBase64 ? `<img src="${currentAdminLogoBase64}" class="max-h-full max-w-full object-contain"/>` : '無 Logo';
       document.getElementById('admin-chop-preview').innerHTML = currentAdminChopBase64 ? `<img src="${currentAdminChopBase64}" class="max-h-full max-w-full object-contain"/>` : '無印章';
       document.getElementById('admin-sig-preview').innerHTML = currentAdminSigBase64 ? `<img src="${currentAdminSigBase64}" class="max-h-full max-w-full object-contain"/>` : '無簽名';
       document.getElementById('admin-qr-preview').innerHTML = currentAdminQrBase64 ? `<img src="${currentAdminQrBase64}" class="max-h-full max-w-full object-contain"/>` : '無 QR';
-      showToast(`正在編輯「${c.name}」`);
+
+      // 視覺高亮及自動捲動至編輯表單
+      const card = document.getElementById('admin-company-card');
+      const badge = document.getElementById('admin-comp-mode-badge');
+      const saveBtn = document.getElementById('admin-comp-save-btn');
+      if (card) {
+        card.classList.add('ui-card-editing');
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (badge) {
+        badge.className = 'text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+        badge.textContent = `✏️ 正在編輯：${c.name}`;
+      }
+      if (saveBtn) saveBtn.textContent = `💾 更新「${c.name}」資料`;
+      setTimeout(() => document.getElementById('admin-comp-name')?.focus(), 300);
+      showToast(`✏️ 已載入「${c.name}」進入編輯模式`);
     }
 
     async function deleteCompanyProfile(id) {
-      if (!confirm('確定刪除？')) return;
-      if (supabaseClient && !String(id).startsWith('c')) await supabaseClient.from('companies').delete().eq('id', id);
+      if (!confirm('確定刪除此公司資料？')) return;
+      if (supabaseClient && !String(id).startsWith('seed_') && !String(id).startsWith('comp_')) {
+        await supabaseClient.from('companies').delete().eq('id', id);
+      }
       companiesData = companiesData.filter(c => String(c.id) !== String(id));
       try { localStorage.setItem('LOCAL_COMPANIES', JSON.stringify(companiesData)); } catch (e) {}
       await loadAllData();
+      showToast('🗑️ 已刪除公司資料');
     }
 
     function resetAdminCompanyForm() {
@@ -1191,44 +1799,145 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       currentAdminLogoBase64 = ''; currentAdminChopBase64 = ''; currentAdminSigBase64 = ''; currentAdminQrBase64 = '';
       const l = document.getElementById('admin-logo-preview'); const c = document.getElementById('admin-chop-preview'); const s = document.getElementById('admin-sig-preview'); const q = document.getElementById('admin-qr-preview');
       if(l) l.innerHTML = '無 Logo'; if(c) c.innerHTML = '無印章'; if(s) s.innerHTML = '無簽名'; if(q) q.innerHTML = '無 QR';
+      const card = document.getElementById('admin-company-card');
+      const badge = document.getElementById('admin-comp-mode-badge');
+      const saveBtn = document.getElementById('admin-comp-save-btn');
+      if (card) card.classList.remove('ui-card-editing');
+      if (badge) {
+        badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600';
+        badge.textContent = '新增公司模式';
+      }
+      if (saveBtn) saveBtn.textContent = '💾 儲存公司資料';
     }
 
     async function saveClientProfile() {
-      const id = document.getElementById('admin-client-id').value; const name = document.getElementById('admin-client-name').value.trim();
+      const id = document.getElementById('admin-client-id').value;
+      const name = document.getElementById('admin-client-name').value.trim();
       if (!name) return alert('請輸入客戶姓名');
-      const payload = { name, company_name: document.getElementById('admin-client-company').value.trim(), phone: document.getElementById('admin-client-phone').value.trim(), address: document.getElementById('admin-client-address').value.trim(), city_zip: document.getElementById('admin-client-city').value.trim(), email: document.getElementById('admin-client-email').value.trim() };
-      if (supabaseClient && (!id || !String(id).startsWith('cli_'))) {
-        if (id) await supabaseClient.from('clients').update(payload).eq('id', id); else await supabaseClient.from('clients').insert([payload]);
+      const payload = {
+        name,
+        company_name: document.getElementById('admin-client-company').value.trim(),
+        phone: document.getElementById('admin-client-phone').value.trim(),
+        address: document.getElementById('admin-client-address').value.trim(),
+        city_zip: document.getElementById('admin-client-city').value.trim(),
+        email: document.getElementById('admin-client-email').value.trim()
+      };
+      let savedCloud = false;
+      if (supabaseClient) {
+        try {
+          if (id && !String(id).startsWith('cli_')) {
+            const { error } = await supabaseClient.from('clients').update(payload).eq('id', id);
+            if (!error) savedCloud = true;
+          } else {
+            const { error } = await supabaseClient.from('clients').insert([payload]);
+            if (!error) savedCloud = true;
+          }
+        } catch (e) {}
       }
-      resetAdminClientForm(); await loadAllData(); showToast('✅ 客戶已儲存！');
+      if (!savedCloud) {
+        if (id) {
+          const idx = clientsData.findIndex(x => String(x.id) === String(id));
+          if (idx > -1) clientsData[idx] = { ...clientsData[idx], ...payload };
+        } else {
+          clientsData.unshift({ id: 'cli_' + Date.now(), ...payload });
+        }
+        try { localStorage.setItem('LOCAL_CLIENTS', JSON.stringify(clientsData)); } catch (e) {}
+      }
+      resetAdminClientForm();
+      await loadAllData();
+      showToast('✅ 常用客戶已儲存！');
     }
+
     function editClientProfile(id) {
       const c = clientsData.find(x => String(x.id) === String(id)); if (!c) return;
-      document.getElementById('admin-client-id').value = c.id; document.getElementById('admin-client-name').value = c.name || '';
-      document.getElementById('admin-client-company').value = c.company_name || ''; document.getElementById('admin-client-phone').value = c.phone || '';
-      document.getElementById('admin-client-address').value = c.address || ''; document.getElementById('admin-client-city').value = c.city_zip || '';
+      document.getElementById('admin-client-id').value = c.id;
+      document.getElementById('admin-client-name').value = c.name || '';
+      document.getElementById('admin-client-company').value = c.company_name || '';
+      document.getElementById('admin-client-phone').value = c.phone || '';
+      document.getElementById('admin-client-address').value = c.address || '';
+      document.getElementById('admin-client-city').value = c.city_zip || '';
       document.getElementById('admin-client-email').value = c.email || '';
+      const card = document.getElementById('admin-client-card');
+      const badge = document.getElementById('admin-client-mode-badge');
+      if (card) { card.classList.add('ui-card-editing'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      if (badge) { badge.className = 'text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800'; badge.textContent = `✏️ 正在編輯：${c.name}`; }
+      showToast(`✏️ 正在編輯客戶「${c.name}」`);
     }
-    async function deleteClientProfile(id) { if (!confirm('確定刪除？')) return; if (supabaseClient) await supabaseClient.from('clients').delete().eq('id', id); await loadAllData(); }
-    function resetAdminClientForm() { ['admin-client-id','admin-client-name','admin-client-company','admin-client-phone','admin-client-address','admin-client-city','admin-client-email'].forEach(k => { const el = document.getElementById(k); if(el) el.value = ''; }); }
+
+    async function deleteClientProfile(id) {
+      if (!confirm('確定刪除此客戶？')) return;
+      if (supabaseClient && !String(id).startsWith('cli_')) await supabaseClient.from('clients').delete().eq('id', id);
+      clientsData = clientsData.filter(c => String(c.id) !== String(id));
+      try { localStorage.setItem('LOCAL_CLIENTS', JSON.stringify(clientsData)); } catch (e) {}
+      await loadAllData();
+    }
+
+    function resetAdminClientForm() {
+      ['admin-client-id','admin-client-name','admin-client-company','admin-client-phone','admin-client-address','admin-client-city','admin-client-email'].forEach(k => { const el = document.getElementById(k); if(el) el.value = ''; });
+      const card = document.getElementById('admin-client-card');
+      const badge = document.getElementById('admin-client-mode-badge');
+      if (card) card.classList.remove('ui-card-editing');
+      if (badge) { badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600'; badge.textContent = '新增客戶模式'; }
+    }
 
     async function saveCatalogItem() {
-      const id = document.getElementById('admin-item-id').value; const description = document.getElementById('admin-item-desc').value.trim();
+      const id = document.getElementById('admin-item-id').value;
+      const description = document.getElementById('admin-item-desc').value.trim();
       const default_amount = parseFloat(document.getElementById('admin-item-amount').value) || 0;
       if (!description) return alert('請輸入描述');
       const payload = { description, default_amount };
-      if (supabaseClient) { if (id) await supabaseClient.from('catalog_items').update(payload).eq('id', id); else await supabaseClient.from('catalog_items').insert([payload]); }
-      resetAdminItemForm(); await loadAllData(); showToast('✅ 項目已儲存！');
+      let savedCloud = false;
+      if (supabaseClient) {
+        try {
+          if (id && !String(id).startsWith('item_')) {
+            const { error } = await supabaseClient.from('catalog_items').update(payload).eq('id', id);
+            if (!error) savedCloud = true;
+          } else {
+            const { error } = await supabaseClient.from('catalog_items').insert([payload]);
+            if (!error) savedCloud = true;
+          }
+        } catch (e) {}
+      }
+      if (!savedCloud) {
+        if (id) {
+          const idx = catalogItemsData.findIndex(x => String(x.id) === String(id));
+          if (idx > -1) catalogItemsData[idx] = { ...catalogItemsData[idx], ...payload };
+        } else {
+          catalogItemsData.unshift({ id: 'item_' + Date.now(), ...payload });
+        }
+        try { localStorage.setItem('LOCAL_ITEMS', JSON.stringify(catalogItemsData)); } catch (e) {}
+      }
+      resetAdminItemForm();
+      await loadAllData();
+      showToast('✅ 常用收費項目已儲存！');
     }
+
     function editCatalogItem(id) {
       const item = catalogItemsData.find(x => String(x.id) === String(id)); if (!item) return;
-      document.getElementById('admin-item-id').value = item.id; document.getElementById('admin-item-desc').value = item.description || '';
+      document.getElementById('admin-item-id').value = item.id;
+      document.getElementById('admin-item-desc').value = item.description || '';
       document.getElementById('admin-item-amount').value = item.default_amount || 0;
+      const card = document.getElementById('admin-item-card');
+      const badge = document.getElementById('admin-item-mode-badge');
+      if (card) { card.classList.add('ui-card-editing'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      if (badge) { badge.className = 'text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800'; badge.textContent = `✏️ 正在編輯項目`; }
     }
-    async function deleteCatalogItem(id) { if (!confirm('確定刪除？')) return; if (supabaseClient) await supabaseClient.from('catalog_items').delete().eq('id', id); await loadAllData(); }
+
+    async function deleteCatalogItem(id) {
+      if (!confirm('確定刪除此常用項目？')) return;
+      if (supabaseClient && !String(id).startsWith('item_')) await supabaseClient.from('catalog_items').delete().eq('id', id);
+      catalogItemsData = catalogItemsData.filter(x => String(x.id) !== String(id));
+      try { localStorage.setItem('LOCAL_ITEMS', JSON.stringify(catalogItemsData)); } catch (e) {}
+      await loadAllData();
+    }
+
     function resetAdminItemForm() {
       const idEl = document.getElementById('admin-item-id'); const descEl = document.getElementById('admin-item-desc'); const amtEl = document.getElementById('admin-item-amount');
       if (idEl) idEl.value = ''; if (descEl) descEl.value = ''; if (amtEl) amtEl.value = '';
+      const card = document.getElementById('admin-item-card');
+      const badge = document.getElementById('admin-item-mode-badge');
+      if (card) card.classList.remove('ui-card-editing');
+      if (badge) { badge.className = 'text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600'; badge.textContent = '新增項目模式'; }
     }
 
     function renderAdminLists() {
@@ -1237,29 +1946,39 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       const itemList = document.getElementById('admin-items-list');
 
       if (compList) {
-        compList.innerHTML = companiesData.map(c => `
-          <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white">
+        compList.innerHTML = companiesData.map((c, index) => `
+          <div class="flex flex-wrap items-center justify-between gap-2 p-3.5 border border-slate-200 rounded-xl bg-white hover:border-emerald-400 transition">
             <div class="flex items-center gap-3">
-              <div class="w-11 h-11 border rounded-lg flex items-center justify-center overflow-hidden bg-slate-50 text-[10px] text-slate-400">${c.logo_base64 ? `<img src="${c.logo_base64}" class="max-h-full max-w-full object-contain"/>` : '無Logo'}</div>
-              <div><div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)}</div><div class="text-xs text-slate-500">${escapeHtml(c.phone || '')}</div></div>
+              <div class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden bg-slate-50 text-[10px] text-slate-400 shrink-0">${c.logo_base64 ? `<img src="${c.logo_base64}" class="max-h-full max-w-full object-contain"/>` : '無Logo'}</div>
+              <div>
+                <div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)}</div>
+                <div class="text-xs text-slate-500">
+                  ${escapeHtml(c.phone || '')}
+                  <span class="ml-2">${c.sig_base64 ? '✍️有簽名' : '無簽名'} | ${c.chop_base64 ? '💮有印章' : '無印章'} | ${c.qr_base64 ? '📱有QR' : '無QR'}</span>
+                </div>
+              </div>
             </div>
-            <div class="flex gap-1.5"><button type="button" onclick="editCompanyProfile('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">編輯</button><button type="button" onclick="deleteCompanyProfile('${c.id}')" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
+            <div class="flex gap-1.5">
+              <button type="button" onclick="applySelectedCompany(companiesData[${index}].id); switchTab('editor');" class="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg font-semibold">套用開單</button>
+              <button type="button" onclick="editCompanyProfile(companiesData[${index}].id)" class="text-xs bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-bold">✏️ 編輯</button>
+              <button type="button" onclick="deleteCompanyProfile(companiesData[${index}].id)" class="text-xs text-red-500 hover:bg-red-50 px-2.5 py-1.5 rounded-lg">刪除</button>
+            </div>
           </div>
         `).join('');
       }
       if (cliList) {
-        cliList.innerHTML = clientsData.map(c => `
-          <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white">
-            <div><div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)}</div><div class="text-xs text-slate-500">Tel: ${escapeHtml(c.phone || '無')}</div></div>
-            <div class="flex gap-1.5"><button type="button" onclick="editClientProfile('${c.id}')" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg font-semibold">編輯</button><button type="button" onclick="deleteClientProfile('${c.id}')" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
+        cliList.innerHTML = clientsData.map((c, index) => `
+          <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white hover:border-emerald-400 transition">
+            <div><div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)} <span class="text-xs font-normal text-slate-500">${escapeHtml(c.company_name || '')}</span></div><div class="text-xs text-slate-500">WhatsApp: ${escapeHtml(c.phone || '無')} | ${escapeHtml(c.address || '')}</div></div>
+            <div class="flex gap-1.5"><button type="button" onclick="editClientProfile(clientsData[${index}].id)" class="text-xs bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1.5 rounded-lg font-bold">✏️ 編輯</button><button type="button" onclick="deleteClientProfile(clientsData[${index}].id)" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
           </div>
         `).join('');
       }
       if (itemList) {
-        itemList.innerHTML = catalogItemsData.map(i => `
-          <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white">
+        itemList.innerHTML = catalogItemsData.map((i, index) => `
+          <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white hover:border-emerald-400 transition">
             <div class="text-sm font-medium text-slate-800">${escapeHtml(i.description)}</div>
-            <div class="flex items-center gap-3"><span class="font-mono text-sm font-bold text-emerald-700">$${formatCurrency(i.default_amount)}</span><button type="button" onclick="editCatalogItem('${i.id}')" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg font-semibold">編輯</button><button type="button" onclick="deleteCatalogItem('${i.id}')" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
+            <div class="flex items-center gap-3"><span class="font-mono text-sm font-bold text-emerald-700">$${formatCurrency(i.default_amount)}</span><button type="button" onclick="editCatalogItem(catalogItemsData[${index}].id)" class="text-xs bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1.5 rounded-lg font-bold">✏️ 編輯</button><button type="button" onclick="deleteCatalogItem(catalogItemsData[${index}].id)" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
           </div>
         `).join('');
       }
