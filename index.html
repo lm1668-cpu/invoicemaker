@@ -4,15 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>INVOICE PRO — 工程及室內設計單據系統</title>
-  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&family=Noto+Sans+HK:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- html2canvas & jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -217,7 +213,8 @@
         </div>
         <div class="flex flex-wrap gap-2">
           <button type="button" onclick="resetNewInvoice()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-semibold transition">➕ 開新空白單</button>
-          <button type="button" onclick="saveInvoiceToDb()" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">💾 儲存單據至雲端</button>
+          <button type="button" onclick="saveInvoiceToDb(false)" class="text-xs bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2 rounded-xl font-bold transition">💾 儲存草稿</button>
+          <button type="button" onclick="saveInvoiceToDb(true)" class="text-xs bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white px-4 py-2 rounded-xl font-bold shadow-md shadow-emerald-600/20 transition active:scale-95">🚀 正式發出並鎖定</button>
         </div>
       </div>
 
@@ -259,32 +256,42 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <!-- 視覺資產：Logo / 印章 / 簽名 / QR -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-logo-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 Logo</div>
+            <div id="editor-logo-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 Logo</div>
             <div class="flex-1 min-w-0">
-              <label class="block text-xs font-bold text-slate-700 mb-1">公司 Logo</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[11px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('logo')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">公司 Logo</label>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'logo')" class="text-[10px] w-full text-slate-500" />
+              <button type="button" onclick="clearEditorImage('logo')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
             </div>
           </div>
           <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-chop-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無印章</div>
+            <div id="editor-chop-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無印章</div>
             <div class="flex-1 min-w-0">
-              <label class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-1 cursor-pointer">
-                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" />
-                蓋公司印章/簽名
+              <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
+                <input type="checkbox" id="show-chop-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" /> 公司印章
               </label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[11px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('chop')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'chop')" class="text-[10px] w-full text-slate-500" />
+              <button type="button" onclick="clearEditorImage('chop')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
             </div>
           </div>
           <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
-            <div id="editor-qr-preview" class="w-14 h-14 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shrink-0 text-[10px] text-slate-400">無 QR</div>
+            <div id="editor-sig-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無簽名</div>
             <div class="flex-1 min-w-0">
-              <label class="block text-xs font-bold text-slate-700 mb-1">FPS 收款 QR Code</label>
-              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[11px] w-full text-slate-500" />
-              <button type="button" onclick="clearEditorImage('qr')" class="text-[11px] text-red-500 hover:underline mt-1 block">移除</button>
+              <label class="flex items-center gap-1 text-[11px] font-bold text-slate-700 mb-0.5 cursor-pointer">
+                <input type="checkbox" id="show-sig-checkbox" checked onchange="renderInvoicePreview()" class="rounded text-emerald-600" /> 授權簽名
+              </label>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'sig')" class="text-[10px] w-full text-slate-500" />
+              <button type="button" onclick="clearEditorImage('sig')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-200">
+            <div id="editor-qr-preview" class="w-12 h-12 bg-white border rounded-lg flex items-center justify-center overflow-hidden shrink-0 text-[9px] text-slate-400">無 QR</div>
+            <div class="flex-1 min-w-0">
+              <label class="block text-[11px] font-bold text-slate-700 mb-0.5">FPS QR Code</label>
+              <input type="file" accept="image/*" onchange="handleEditorImageUpload(event, 'qr')" class="text-[10px] w-full text-slate-500" />
+              <button type="button" onclick="clearEditorImage('qr')" class="text-[10px] text-red-500 hover:underline mt-0.5 block">移除</button>
             </div>
           </div>
         </div>
@@ -296,10 +303,10 @@
           <div><label class="ui-label">英文地址 / 地區 (City, ST ZIP)</label><input type="text" id="comp-city" value="Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK" oninput="renderInvoicePreview()" class="ui-input" /></div>
           <div class="sm:col-span-2">
             <div class="flex items-center justify-between mb-1">
-              <label class="ui-label !mb-0">🏦 付款方法及銀行轉賬條款 (Payment Methods - 自動印於單據底部)</label>
+              <label class="ui-label !mb-0">🏦 付款方法及銀行轉賬條款 (Payment Methods)</label>
               <button type="button" onclick="fillEcdecoPaymentTerms()" class="text-[11px] text-emerald-700 hover:underline font-semibold">🔄 載入迪高標準中英條款</button>
             </div>
-            <textarea id="comp-payment-info" rows="6" oninput="renderInvoicePreview()" class="ui-input text-xs leading-relaxed">(i) 郵遞付款 (Post the cheque): 將劃線支票連同工程支付通知書寄往中環皇后大道中222-226號啟煌商業大廈1002室。請勿郵寄現金。註:劃線支票抬頭請寫「Ecdeco Company」或「迪高室內設計」,並於支票背面註明工程編號。請客戶於到期繳款日前五個工作天前寄回,並將以過數日為準,本公司不接受期票及請勿郵寄現金。
+            <textarea id="comp-payment-info" rows="5" oninput="renderInvoicePreview()" class="ui-input text-xs leading-relaxed">(i) 郵遞付款 (Post the cheque): 將劃線支票連同工程支付通知書寄往中環皇后大道中222-226號啟煌商業大廈1002室。請勿郵寄現金。註:劃線支票抬頭請寫「Ecdeco Company」或「迪高室內設計」,並於支票背面註明工程編號。請客戶於到期繳款日前五個工作天前寄回,並將以過數日為準,本公司不接受期票及請勿郵寄現金。
 Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your project number at the back of the cheque) and post it to Room 1002 Kai Wong Commercial Building, No.224 Queens Road Central, Central, Hong Kong. Any post dated cheque payment shall not be accepted. Please post the cheque five days prior the due date and do not post cash to us.
 (ii) 親臨付款 (Payment by hand): 客人可以攜同工程支付通知書到本公司以現金、支票繳款。Customers are advised to settle the bill by paying cash or cheque at our office.
 (iii) 銀行轉賬 (ATM Transfer): 客人可於匯豐銀行之自動櫃員機轉賬付款。請保留入數証明。存入本公司之匯豐銀行戶口號碼 "640-097770-838" (Transferring funds by HSBC ATM kiosk to our HSBC account: 640-097770-838. Please retain the transaction receipt.)
@@ -382,9 +389,9 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           <div>
             <div class="flex justify-between items-start">
               <div class="max-w-[56%]">
-                <div id="inv-render-logo-box" class="mb-2.5 hidden"><img id="inv-render-logo" src="" alt="Company Logo" class="max-h-16 object-contain" /></div>
-                <div id="inv-render-comp-name" class="text-[21px] font-bold text-slate-900 mb-1 leading-snug tracking-tight">迪高室內設計 Ecdeco Company</div>
-                <div class="text-[11.5px] leading-[1.45] text-slate-700 space-y-0.5">
+                <div id="inv-render-logo-box" class="mb-2 hidden"><img id="inv-render-logo" src="" alt="Company Logo" class="max-h-16 max-w-[200px] object-contain" /></div>
+                <div id="inv-render-comp-name" class="text-[20px] font-bold text-slate-900 mb-1 leading-snug tracking-tight">迪高室內設計 Ecdeco Company</div>
+                <div class="text-[11px] leading-[1.4] text-slate-700 space-y-0.5">
                   <div id="inv-render-comp-address">中環皇后大道中222-226號啟煌商業大廈1002室</div>
                   <div id="inv-render-comp-city">Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK</div>
                   <div id="inv-render-comp-phone" class="font-medium text-slate-800">Phone: (852) 9123-4567</div>
@@ -416,21 +423,28 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
             </div>
           </div>
 
-          <!-- 底部：完整中英對照付款方法 + FPS QR + 右下角公司印章 -->
-          <div class="mt-4 pt-3 border-t border-slate-300 flex justify-between items-end gap-4">
-            <div class="flex items-start gap-3 max-w-[70%]">
-              <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1 rounded-lg bg-white shadow-sm mt-1">
-                <img id="inv-render-qr" src="" alt="Payment QR" class="w-16 h-16 object-contain" />
-                <div class="text-[8px] font-bold text-center text-slate-500 mt-0.5">FPS / Scan</div>
+          <!-- 底部：付款條款 + 左邊簽名、右邊印章 -->
+          <div class="mt-3 pt-2.5 border-t border-slate-300 flex justify-between items-end gap-3">
+            <div class="flex items-start gap-2.5 max-w-[58%]">
+              <div id="inv-render-qr-box" class="hidden shrink-0 border border-slate-300 p-1 rounded bg-white shadow-sm mt-0.5">
+                <img id="inv-render-qr" src="" alt="Payment QR" class="w-14 h-14 object-contain" />
+                <div class="text-[7.5px] font-bold text-center text-slate-500 mt-0.5">FPS</div>
               </div>
-              <div class="text-[9.2px] leading-[1.38] text-slate-700">
-                <div class="font-bold text-[10.5px] text-blue-950 mb-1 tracking-wide">付款方法 (Payment Methods)：</div>
+              <div class="text-[8.5px] leading-[1.32] text-slate-700">
+                <div class="font-bold text-[9.5px] text-blue-950 mb-0.5 tracking-wide">付款方法 (Payment Methods)：</div>
                 <div id="inv-render-payment-info" class="whitespace-pre-line text-justify"></div>
               </div>
             </div>
-            <div class="w-48 shrink-0 text-center">
-              <div class="h-20 flex items-center justify-center relative"><img id="inv-render-chop" src="" alt="Company Chop" class="max-h-20 max-w-full object-contain hidden" /></div>
-              <div class="border-t border-slate-500 pt-1 text-[10.5px] font-semibold text-slate-700 tracking-wide">Authorized Signature & Company Chop</div>
+            <!-- 左邊簽名、右邊印章並排區 -->
+            <div class="w-52 shrink-0 flex items-end justify-between text-center gap-2">
+              <div class="flex-1">
+                <div class="h-16 flex items-center justify-center relative"><img id="inv-render-sig" src="" alt="Signature" class="max-h-16 max-w-full object-contain hidden" /></div>
+                <div class="border-t border-slate-400 pt-0.5 text-[9px] font-semibold text-slate-600">Authorized Signature</div>
+              </div>
+              <div class="flex-1">
+                <div class="h-16 flex items-center justify-center relative"><img id="inv-render-chop" src="" alt="Company Chop" class="max-h-16 max-w-full object-contain hidden" /></div>
+                <div class="border-t border-slate-400 pt-0.5 text-[9px] font-semibold text-slate-600">Company Chop</div>
+              </div>
             </div>
           </div>
         </div>
@@ -463,23 +477,27 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         <h2 class="font-extrabold text-slate-800 text-base border-b border-slate-100 pb-3">🏢 1. 開單公司資料、收款戶口及印章管理</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
           <input type="hidden" id="admin-comp-id" />
-          <div><label class="ui-label">公司名稱 *</label><input type="text" id="admin-comp-name" placeholder="例如：迪高室內設計 Ecdeco Company" class="ui-input !bg-white" /></div>
-          <div><label class="ui-label">電話</label><input type="text" id="admin-comp-phone" placeholder="例如：(852) 2888-9999" class="ui-input !bg-white" /></div>
-          <div><label class="ui-label">中文街道地址</label><input type="text" id="admin-comp-address" placeholder="例如：中環皇后大道中222-226號啟煌商業大廈1002室" class="ui-input !bg-white" /></div>
-          <div><label class="ui-label">英文地址 / 地區</label><input type="text" id="admin-comp-city" placeholder="Room 1002, Kai Wong Commercial Building, Central, HK" class="ui-input !bg-white" /></div>
-          <div class="sm:col-span-2"><label class="ui-label">🏦 預設收款辦法 / 銀行戶口 / 支票抬頭條款</label><textarea id="admin-comp-payment" rows="5" placeholder="支票抬頭、銀行轉賬戶口及條款..." class="ui-input !bg-white text-xs"></textarea></div>
-          <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-logo-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 Logo</div>
-              <div class="flex-1 min-w-0"><label class="block text-[11px] font-bold text-slate-700">公司 Logo</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[11px] w-full" /></div>
+          <div><label class="ui-label">公司名稱 *</label><input type="text" id="admin-comp-name" placeholder="例如：迪高室內設計" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">電話</label><input type="text" id="admin-comp-phone" placeholder="例如：(852) 9123-4567" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">中文街道地址</label><input type="text" id="admin-comp-address" placeholder="例如：中環皇后大道中222-226號" class="ui-input !bg-white" /></div>
+          <div><label class="ui-label">英文地址 / 地區</label><input type="text" id="admin-comp-city" placeholder="Room 1002, Kai Wong Commercial Building, HK" class="ui-input !bg-white" /></div>
+          <div class="sm:col-span-2"><label class="ui-label">🏦 預設收款辦法 / 銀行戶口條款</label><textarea id="admin-comp-payment" rows="4" placeholder="支票抬頭、銀行轉賬戶口及條款..." class="ui-input !bg-white text-xs"></textarea></div>
+          <div class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-4 gap-3 pt-1">
+            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+              <div id="admin-logo-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 Logo</div>
+              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">Logo</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'logo')" class="text-[10px] w-full" /></div>
             </div>
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-chop-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無印章</div>
-              <div class="flex-1 min-w-0"><label class="block text-[11px] font-bold text-slate-700">公司印章/簽名</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[11px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+              <div id="admin-chop-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無印章</div>
+              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">公司印章</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'chop')" class="text-[10px] w-full" /></div>
             </div>
-            <div class="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-              <div id="admin-qr-preview" class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden text-[10px] text-slate-400 shrink-0">無 QR</div>
-              <div class="flex-1 min-w-0"><label class="block text-[11px] font-bold text-slate-700">FPS 收款 QR</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[11px] w-full" /></div>
+            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+              <div id="admin-sig-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無簽名</div>
+              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">授權簽名</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'sig')" class="text-[10px] w-full" /></div>
+            </div>
+            <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-200">
+              <div id="admin-qr-preview" class="w-10 h-10 border rounded flex items-center justify-center overflow-hidden text-[9px] text-slate-400 shrink-0">無 QR</div>
+              <div class="flex-1 min-w-0"><label class="block text-[10px] font-bold text-slate-700">FPS QR</label><input type="file" accept="image/*" onchange="handleAdminImageUpload(event, 'qr')" class="text-[10px] w-full" /></div>
             </div>
           </div>
           <div class="sm:col-span-2 flex justify-end gap-2 pt-2">
@@ -556,8 +574,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
     let supabaseClient = null;
     let currentEditingInvoiceId = null;
-    let currentEditorLogoBase64 = '', currentEditorChopBase64 = '', currentEditorQrBase64 = '';
-    let currentAdminLogoBase64 = '', currentAdminChopBase64 = '', currentAdminQrBase64 = '';
+    let currentEditorLogoBase64 = '', currentEditorChopBase64 = '', currentEditorSigBase64 = '', currentEditorQrBase64 = '';
+    let currentAdminLogoBase64 = '', currentAdminChopBase64 = '', currentAdminSigBase64 = '', currentAdminQrBase64 = '';
     let companiesData = [], clientsData = [], catalogItemsData = [], invoicesHistoryData = [];
     let currentLineItems = [
       { description: 'Service Fee', amount: 0.00 },
@@ -570,77 +588,39 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       {
         name: '迪高室內設計 Ecdeco Company',
         address: '中環皇后大道中222-226號啟煌商業大廈1002室',
-        city_zip: 'Room 1002, Kai Wong Commercial Building, No.224 Queens Road Central, Central, Hong Kong',
+        city_zip: "Room 1002, Kai Wong Commercial Building, No.224 Queen's Road Central, HK",
         phone: '(852) 9123-4567',
         payment_info: ECDECO_PAYMENT_TERMS,
-        logo_base64: '', chop_base64: '', qr_base64: ''
-      },
-      {
-        name: '臻藝設計工程有限公司',
-        address: '中環皇后大道中222-226號啟煌商業大廈1002室',
-        city_zip: 'Room 1002, Kai Wong Commercial Building, No.224 Queens Road Central, Central, Hong Kong',
-        phone: '(852) 2888-9999',
-        payment_info: ECDECO_PAYMENT_TERMS.replace(/Ecdeco Company/g, '臻藝設計工程有限公司').replace(/迪高室內設計/g, '臻藝設計工程有限公司'),
-        logo_base64: '', chop_base64: '', qr_base64: ''
-      },
-      {
-        name: '富盈工程營造有限公司',
-        address: '中環皇后大道中222-226號啟煌商業大廈1002室',
-        city_zip: 'Room 1002, Kai Wong Commercial Building, No.224 Queens Road Central, Central, Hong Kong',
-        phone: '(852) 2345-6789',
-        payment_info: ECDECO_PAYMENT_TERMS.replace(/Ecdeco Company/g, '富盈工程營造有限公司').replace(/迪高室內設計/g, '富盈工程營造有限公司'),
-        logo_base64: '', chop_base64: '', qr_base64: ''
+        logo_base64: '', chop_base64: '', sig_base64: '', qr_base64: ''
       }
     ];
 
-    // ==================== 100% 容錯防卡死 PIN 密碼鎖驗證邏輯 ====================
     function isPinUnlocked() {
-      try {
-        return sessionStorage.getItem('INV_PIN_UNLOCKED') === 'true';
-      } catch (e) {
-        return false;
-      }
+      try { return sessionStorage.getItem('INV_PIN_UNLOCKED') === 'true'; } catch (e) { return false; }
     }
-
     function setPinUnlocked() {
-      try {
-        sessionStorage.setItem('INV_PIN_UNLOCKED', 'true');
-      } catch (e) {}
+      try { sessionStorage.setItem('INV_PIN_UNLOCKED', 'true'); } catch (e) {}
     }
-
     function getSavedPin() {
-      try {
-        return localStorage.getItem('INV_APP_PIN') || '1668';
-      } catch (e) {
-        return '1668';
-      }
+      try { return localStorage.getItem('INV_APP_PIN') || '1668'; } catch (e) { return '1668'; }
     }
-
     function checkPinSession() {
       const overlay = document.getElementById('pin-lock-overlay');
       if (!overlay) return;
       if (isPinUnlocked()) {
-        overlay.style.display = 'none';
-        overlay.classList.add('hidden');
+        overlay.style.display = 'none'; overlay.classList.add('hidden');
       } else {
-        overlay.style.display = 'flex';
-        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex'; overlay.classList.remove('hidden');
       }
     }
-
     function verifyPin() {
       const inputEl = document.getElementById('pin-input');
       const errorEl = document.getElementById('pin-error');
       const overlay = document.getElementById('pin-lock-overlay');
       const inputVal = inputEl ? String(inputEl.value).trim() : '';
-      const savedPin = getSavedPin();
-
-      if (inputVal === '1668' || inputVal === savedPin) {
+      if (inputVal === '1668' || inputVal === getSavedPin()) {
         setPinUnlocked();
-        if (overlay) {
-          overlay.style.display = 'none';
-          overlay.classList.add('hidden');
-        }
+        if (overlay) { overlay.style.display = 'none'; overlay.classList.add('hidden'); }
         if (errorEl) errorEl.classList.add('hidden');
         showToast('🔓 歡迎回來！系統已解鎖');
       } else {
@@ -648,7 +628,6 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         if (inputEl) inputEl.value = '';
       }
     }
-
     function changePinCode() {
       const currentSaved = getSavedPin();
       const newPin = prompt('請輸入新嘅 4-6 位訪問密碼 (目前密碼: ' + currentSaved + ')：', currentSaved);
@@ -657,27 +636,20 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         showToast('✅ 密碼已更新為：' + newPin.trim());
       }
     }
-
     function fillEcdecoPaymentTerms() {
       const el = document.getElementById('comp-payment-info');
-      if (el) {
-        el.value = ECDECO_PAYMENT_TERMS;
-        renderInvoicePreview();
-        showToast('✅ 已載入迪高標準中英付款條款');
-      }
+      if (el) { el.value = ECDECO_PAYMENT_TERMS; renderInvoicePreview(); showToast('✅ 已載入迪高標準條款'); }
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       checkPinSession();
       document.getElementById('inv-date').value = new Date().toISOString().split('T')[0];
 
-      let savedUrl = DEFAULT_SUPABASE_URL;
-      let savedKey = DEFAULT_SUPABASE_KEY;
+      let savedUrl = DEFAULT_SUPABASE_URL, savedKey = DEFAULT_SUPABASE_KEY;
       try {
         savedUrl = localStorage.getItem('INV_SUPABASE_URL') || DEFAULT_SUPABASE_URL;
         savedKey = localStorage.getItem('INV_SUPABASE_KEY') || DEFAULT_SUPABASE_KEY;
       } catch (e) {}
-
       document.getElementById('supabase-url-input').value = savedUrl;
       document.getElementById('supabase-key-input').value = savedKey;
 
@@ -692,8 +664,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     function showToast(msg) {
       const t = document.getElementById('toast');
       if (!t) return;
-      t.textContent = msg;
-      t.classList.remove('hidden');
+      t.textContent = msg; t.classList.remove('hidden');
       setTimeout(() => t.classList.add('hidden'), 3200);
     }
 
@@ -715,14 +686,8 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     async function saveSupabaseConfig() {
       const url = document.getElementById('supabase-url-input').value.trim();
       const key = document.getElementById('supabase-key-input').value.trim();
-      try {
-        localStorage.setItem('INV_SUPABASE_URL', url);
-        localStorage.setItem('INV_SUPABASE_KEY', key);
-      } catch (e) {}
-      initSupabase(url, key);
-      closeDbModal();
-      await loadAllData();
-      showToast('✅ 已重新同步 Supabase 資料庫！');
+      try { localStorage.setItem('INV_SUPABASE_URL', url); localStorage.setItem('INV_SUPABASE_KEY', key); } catch (e) {}
+      initSupabase(url, key); closeDbModal(); await loadAllData(); showToast('✅ 已重新同步 Supabase！');
     }
 
     async function loadAllData() {
@@ -744,9 +709,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         try { companiesData = JSON.parse(localStorage.getItem('LOCAL_COMPANIES') || '[]'); } catch (e) {}
         if (companiesData.length === 0) companiesData = DEFAULT_COMPANIES_SEED.map((c, i) => ({ id: 'c' + i, ...c }));
       }
-      populateDropdowns();
-      renderAdminLists();
-      renderHistoryList();
+      populateDropdowns(); renderAdminLists(); renderHistoryList();
     }
 
     function populateDropdowns() {
@@ -781,6 +744,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       compressImageToBase64(file, (base64) => {
         if (type === 'logo') currentEditorLogoBase64 = base64;
         if (type === 'chop') currentEditorChopBase64 = base64;
+        if (type === 'sig') currentEditorSigBase64 = base64;
         if (type === 'qr') currentEditorQrBase64 = base64;
         updateEditorImagePreviews(); renderInvoicePreview();
       });
@@ -789,6 +753,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     function clearEditorImage(type) {
       if (type === 'logo') currentEditorLogoBase64 = '';
       if (type === 'chop') currentEditorChopBase64 = '';
+      if (type === 'sig') currentEditorSigBase64 = '';
       if (type === 'qr') currentEditorQrBase64 = '';
       updateEditorImagePreviews(); renderInvoicePreview();
     }
@@ -796,9 +761,11 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     function updateEditorImagePreviews() {
       const l = document.getElementById('editor-logo-preview');
       const c = document.getElementById('editor-chop-preview');
+      const s = document.getElementById('editor-sig-preview');
       const q = document.getElementById('editor-qr-preview');
       if (l) l.innerHTML = currentEditorLogoBase64 ? `<img src="${currentEditorLogoBase64}" class="max-h-full max-w-full object-contain"/>` : '無 Logo';
       if (c) c.innerHTML = currentEditorChopBase64 ? `<img src="${currentEditorChopBase64}" class="max-h-full max-w-full object-contain"/>` : '無印章';
+      if (s) s.innerHTML = currentEditorSigBase64 ? `<img src="${currentEditorSigBase64}" class="max-h-full max-w-full object-contain"/>` : '無簽名';
       if (q) q.innerHTML = currentEditorQrBase64 ? `<img src="${currentEditorQrBase64}" class="max-h-full max-w-full object-contain"/>` : '無 QR';
     }
 
@@ -809,8 +776,11 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       document.getElementById('comp-city').value = comp.city_zip || '';
       document.getElementById('comp-phone').value = comp.phone || '';
       document.getElementById('comp-payment-info').value = comp.payment_info || ECDECO_PAYMENT_TERMS;
-      currentEditorLogoBase64 = comp.logo_base64 || ''; currentEditorChopBase64 = comp.chop_base64 || ''; currentEditorQrBase64 = comp.qr_base64 || '';
-      updateEditorImagePreviews(); renderInvoicePreview(); showToast(`🏢 已套用「${comp.name}」資料及付款方法`);
+      currentEditorLogoBase64 = comp.logo_base64 || '';
+      currentEditorChopBase64 = comp.chop_base64 || '';
+      currentEditorSigBase64 = comp.sig_base64 || '';
+      currentEditorQrBase64 = comp.qr_base64 || '';
+      updateEditorImagePreviews(); renderInvoicePreview(); showToast(`🏢 已套用「${comp.name}」資料及印章簽名`);
     }
 
     function applySelectedClient(clientId) {
@@ -942,27 +912,34 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         if (qrBox) qrBox.classList.add('hidden');
       }
 
+      // 簽名在左、印章在右
+      const sigImg = document.getElementById('inv-render-sig');
+      const showSig = document.getElementById('show-sig-checkbox');
+      if (sigImg && showSig && showSig.checked && currentEditorSigBase64) {
+        sigImg.src = currentEditorSigBase64; sigImg.classList.remove('hidden');
+      } else if (sigImg) { sigImg.classList.add('hidden'); }
+
       const chopImg = document.getElementById('inv-render-chop');
       const showChop = document.getElementById('show-chop-checkbox');
       if (chopImg && showChop && showChop.checked && currentEditorChopBase64) {
-        chopImg.src = currentEditorChopBase64;
-        chopImg.classList.remove('hidden');
-      } else if (chopImg) {
-        chopImg.classList.add('hidden');
-      }
+        chopImg.src = currentEditorChopBase64; chopImg.classList.remove('hidden');
+      } else if (chopImg) { chopImg.classList.add('hidden'); }
     }
 
-    async function saveInvoiceToDb() {
+    async function saveInvoiceToDb(isFormalIssue = false) {
       const docType = document.getElementById('doc-type').value || 'INVOICE';
       const payStatus = document.getElementById('payment-status').value || 'UNPAID';
+      const currentNum = document.getElementById('inv-number').value.trim() || '001';
+
       const payload = {
-        invoice_number: document.getElementById('inv-number').value.trim() || '001',
+        invoice_number: currentNum,
         invoice_date: document.getElementById('inv-date').value,
         doc_type: docType, payment_status: payStatus, deposit_paid: getDepositPaid(),
-        company_snapshot: { name: document.getElementById('comp-name').value, address: document.getElementById('comp-address').value, city_zip: document.getElementById('comp-city').value, phone: document.getElementById('comp-phone').value, payment_info: document.getElementById('comp-payment-info').value, logo_base64: currentEditorLogoBase64, chop_base64: currentEditorChopBase64, qr_base64: currentEditorQrBase64 },
+        company_snapshot: { name: document.getElementById('comp-name').value, address: document.getElementById('comp-address').value, city_zip: document.getElementById('comp-city').value, phone: document.getElementById('comp-phone').value, payment_info: document.getElementById('comp-payment-info').value, logo_base64: currentEditorLogoBase64, chop_base64: currentEditorChopBase64, sig_base64: currentEditorSigBase64, qr_base64: currentEditorQrBase64 },
         client_snapshot: { name: document.getElementById('client-name').value, company_name: document.getElementById('client-company').value, address: document.getElementById('client-address').value, city_zip: document.getElementById('client-city').value, phone: document.getElementById('client-phone').value, email: document.getElementById('client-email').value },
         line_items: currentLineItems, total_amount: calculateTotal(), updated_at: new Date().toISOString()
       };
+
       let savedCloud = false;
       if (supabaseClient) {
         try {
@@ -975,6 +952,7 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           }
         } catch (e) { console.warn(e); }
       }
+
       if (!savedCloud) {
         if (currentEditingInvoiceId) {
           const idx = invoicesHistoryData.findIndex(i => i.id === currentEditingInvoiceId);
@@ -985,20 +963,45 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
         }
         try { localStorage.setItem('LOCAL_INVOICES', JSON.stringify(invoicesHistoryData)); } catch (e) {}
       }
+
       const editStat = document.getElementById('current-edit-status');
-      if (editStat) editStat.textContent = `正在編輯 ${docType} #${payload.invoice_number}`;
-      await loadAllData(); showToast(`✅ ${docType} #${payload.invoice_number} 已成功儲存！`);
+      if (editStat) editStat.textContent = `已正式發出 ${docType} #${currentNum}`;
+
+      if (isFormalIssue) {
+        // 自動記憶並將下張單號加 1
+        const numericPart = parseInt(currentNum.replace(/[^0-9]/g, ''));
+        const nextNum = !isNaN(numericPart) ? String(numericPart + 1) : String(Number(currentNum) + 1 || '24');
+        showToast(`🚀 ${docType} #${currentNum} 已正式發出並儲存！自動開新單 #${nextNum}`);
+        
+        // 延遲 1 秒自動開新單並帶入下一個單號
+        setTimeout(() => {
+          currentEditingInvoiceId = null;
+          document.getElementById('inv-number').value = nextNum;
+          if (editStat) editStat.textContent = '新單據草稿';
+        }, 800);
+      } else {
+        showToast(`💾 存入草稿成功 (單號 #${currentNum})`);
+      }
+      await loadAllData();
     }
 
     function resetNewInvoice() {
       currentEditingInvoiceId = null; 
       const editStat = document.getElementById('current-edit-status');
       if (editStat) editStat.textContent = '新單據草稿';
-      document.getElementById('inv-number').value = String(invoicesHistoryData.length + 24);
+      
+      // 自動推算下一張單號
+      let nextNum = '24';
+      if (invoicesHistoryData.length > 0) {
+        const lastNumStr = invoicesHistoryData[0].invoice_number || '23';
+        const numPart = parseInt(lastNumStr.replace(/[^0-9]/g, ''));
+        if (!isNaN(numPart)) nextNum = String(numPart + 1);
+      }
+      document.getElementById('inv-number').value = nextNum;
       document.getElementById('inv-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('doc-type').value = 'INVOICE'; document.getElementById('payment-status').value = 'UNPAID';
       document.getElementById('deposit-paid-input').value = 0; currentLineItems = [{ description: 'Service Fee', amount: 0 }];
-      renderEditorLineItems(); renderInvoicePreview(); showToast('已開啟新空白單據');
+      renderEditorLineItems(); renderInvoicePreview(); showToast(`已開新空白單，編號自動帶出 #${nextNum}`);
     }
 
     function loadInvoiceForEdit(invId, goPreview = false, overrideDocType = null) {
@@ -1015,7 +1018,10 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       document.getElementById('comp-name').value = comp.name || ''; document.getElementById('comp-address').value = comp.address || '';
       document.getElementById('comp-city').value = comp.city_zip || ''; document.getElementById('comp-phone').value = comp.phone || '';
       document.getElementById('comp-payment-info').value = comp.payment_info || ECDECO_PAYMENT_TERMS;
-      currentEditorLogoBase64 = comp.logo_base64 || ''; currentEditorChopBase64 = comp.chop_base64 || ''; currentEditorQrBase64 = comp.qr_base64 || '';
+      currentEditorLogoBase64 = comp.logo_base64 || '';
+      currentEditorChopBase64 = comp.chop_base64 || '';
+      currentEditorSigBase64 = comp.sig_base64 || '';
+      currentEditorQrBase64 = comp.qr_base64 || '';
       updateEditorImagePreviews();
       const cli = inv.client_snapshot || {};
       document.getElementById('client-name').value = cli.name || ''; document.getElementById('client-company').value = cli.company_name || '';
@@ -1104,9 +1110,9 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       return { pdf, pdfFile: new File([pdf.output('blob')], fileName, { type: 'application/pdf' }), fileName, invNum, docType };
     }
 
-    async function downloadInvoicePdf() { showToast('⏳ 正在生成高清 PDF...'); await saveInvoiceToDb(); const { pdf, fileName } = await generatePdfBlobAndFile(); pdf.save(fileName); showToast('✅ PDF 已下載！'); }
+    async function downloadInvoicePdf() { showToast('⏳ 正在生成高清 PDF...'); await saveInvoiceToDb(false); const { pdf, fileName } = await generatePdfBlobAndFile(); pdf.save(fileName); showToast('✅ PDF 已下載！'); }
     async function sharePdfToWhatsApp() {
-      showToast('⏳ 正在生成 PDF 傳送...'); await saveInvoiceToDb(); const { pdf, pdfFile, fileName, invNum, docType } = await generatePdfBlobAndFile();
+      showToast('⏳ 正在生成 PDF 傳送...'); await saveInvoiceToDb(false); const { pdf, pdfFile, fileName, invNum, docType } = await generatePdfBlobAndFile();
       const clientName = document.getElementById('client-name').value.trim() || '客戶';
       const compName = document.getElementById('comp-name').value.trim() || '本公司';
       const totalStr = '$' + formatCurrency(calculateTotal());
@@ -1117,13 +1123,14 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
       }
       pdf.save(fileName); window.open(`https://wa.me/${rawPhone}?text=` + encodeURIComponent(waMessage), '_blank');
     }
-    async function saveAndPrint() { await saveInvoiceToDb(); window.print(); }
+    async function saveAndPrint() { await saveInvoiceToDb(false); window.print(); }
 
     function handleAdminImageUpload(e, type) {
       const file = e.target.files[0]; if (!file) return;
       compressImageToBase64(file, (base64) => {
         if (type === 'logo') { currentAdminLogoBase64 = base64; document.getElementById('admin-logo-preview').innerHTML = `<img src="${base64}" class="max-h-full max-w-full object-contain"/>`; }
         if (type === 'chop') { currentAdminChopBase64 = base64; document.getElementById('admin-chop-preview').innerHTML = `<img src="${base64}" class="max-h-full max-w-full object-contain"/>`; }
+        if (type === 'sig') { currentAdminSigBase64 = base64; document.getElementById('admin-sig-preview').innerHTML = `<img src="${base64}" class="max-h-full max-w-full object-contain"/>`; }
         if (type === 'qr') { currentAdminQrBase64 = base64; document.getElementById('admin-qr-preview').innerHTML = `<img src="${base64}" class="max-h-full max-w-full object-contain"/>`; }
       });
     }
@@ -1131,7 +1138,17 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
     async function saveCompanyProfile() {
       const id = document.getElementById('admin-comp-id').value; const name = document.getElementById('admin-comp-name').value.trim();
       if (!name) return alert('請輸入公司名稱');
-      const payload = { name, phone: document.getElementById('admin-comp-phone').value.trim(), address: document.getElementById('admin-comp-address').value.trim(), city_zip: document.getElementById('admin-comp-city').value.trim(), payment_info: document.getElementById('admin-comp-payment').value.trim(), logo_base64: currentAdminLogoBase64, chop_base64: currentAdminChopBase64, qr_base64: currentAdminQrBase64 };
+      const payload = {
+        name,
+        phone: document.getElementById('admin-comp-phone').value.trim(),
+        address: document.getElementById('admin-comp-address').value.trim(),
+        city_zip: document.getElementById('admin-comp-city').value.trim(),
+        payment_info: document.getElementById('admin-comp-payment').value.trim(),
+        logo_base64: currentAdminLogoBase64,
+        chop_base64: currentAdminChopBase64,
+        sig_base64: currentAdminSigBase64,
+        qr_base64: currentAdminQrBase64
+      };
       if (supabaseClient && (!id || !String(id).startsWith('c'))) {
         if (id) await supabaseClient.from('companies').update(payload).eq('id', id); else await supabaseClient.from('companies').insert([payload]);
       } else {
@@ -1144,13 +1161,21 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
     function editCompanyProfile(id) {
       const c = companiesData.find(x => String(x.id) === String(id)); if (!c) return;
-      document.getElementById('admin-comp-id').value = c.id; document.getElementById('admin-comp-name').value = c.name || '';
-      document.getElementById('admin-comp-phone').value = c.phone || ''; document.getElementById('admin-comp-address').value = c.address || '';
-      document.getElementById('admin-comp-city').value = c.city_zip || ''; document.getElementById('admin-comp-payment').value = c.payment_info || '';
-      currentAdminLogoBase64 = c.logo_base64 || ''; currentAdminChopBase64 = c.chop_base64 || ''; currentAdminQrBase64 = c.qr_base64 || '';
+      document.getElementById('admin-comp-id').value = c.id;
+      document.getElementById('admin-comp-name').value = c.name || '';
+      document.getElementById('admin-comp-phone').value = c.phone || '';
+      document.getElementById('admin-comp-address').value = c.address || '';
+      document.getElementById('admin-comp-city').value = c.city_zip || '';
+      document.getElementById('admin-comp-payment').value = c.payment_info || '';
+      currentAdminLogoBase64 = c.logo_base64 || '';
+      currentAdminChopBase64 = c.chop_base64 || '';
+      currentAdminSigBase64 = c.sig_base64 || '';
+      currentAdminQrBase64 = c.qr_base64 || '';
       document.getElementById('admin-logo-preview').innerHTML = currentAdminLogoBase64 ? `<img src="${currentAdminLogoBase64}" class="max-h-full max-w-full object-contain"/>` : '無 Logo';
       document.getElementById('admin-chop-preview').innerHTML = currentAdminChopBase64 ? `<img src="${currentAdminChopBase64}" class="max-h-full max-w-full object-contain"/>` : '無印章';
+      document.getElementById('admin-sig-preview').innerHTML = currentAdminSigBase64 ? `<img src="${currentAdminSigBase64}" class="max-h-full max-w-full object-contain"/>` : '無簽名';
       document.getElementById('admin-qr-preview').innerHTML = currentAdminQrBase64 ? `<img src="${currentAdminQrBase64}" class="max-h-full max-w-full object-contain"/>` : '無 QR';
+      showToast(`正在編輯「${c.name}」`);
     }
 
     async function deleteCompanyProfile(id) {
@@ -1163,9 +1188,9 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
 
     function resetAdminCompanyForm() {
       ['admin-comp-id','admin-comp-name','admin-comp-phone','admin-comp-address','admin-comp-city','admin-comp-payment'].forEach(k => { const el = document.getElementById(k); if(el) el.value = ''; });
-      currentAdminLogoBase64 = ''; currentAdminChopBase64 = ''; currentAdminQrBase64 = '';
-      const l = document.getElementById('admin-logo-preview'); const c = document.getElementById('admin-chop-preview'); const q = document.getElementById('admin-qr-preview');
-      if(l) l.innerHTML = '無 Logo'; if(c) c.innerHTML = '無印章'; if(q) q.innerHTML = '無 QR';
+      currentAdminLogoBase64 = ''; currentAdminChopBase64 = ''; currentAdminSigBase64 = ''; currentAdminQrBase64 = '';
+      const l = document.getElementById('admin-logo-preview'); const c = document.getElementById('admin-chop-preview'); const s = document.getElementById('admin-sig-preview'); const q = document.getElementById('admin-qr-preview');
+      if(l) l.innerHTML = '無 Logo'; if(c) c.innerHTML = '無印章'; if(s) s.innerHTML = '無簽名'; if(q) q.innerHTML = '無 QR';
     }
 
     async function saveClientProfile() {
@@ -1216,9 +1241,9 @@ Preparing a crossed cheque which is payable to Ecdeco Company (Please noted your
           <div class="flex items-center justify-between p-3 border border-slate-200 rounded-xl bg-white">
             <div class="flex items-center gap-3">
               <div class="w-11 h-11 border rounded-lg flex items-center justify-center overflow-hidden bg-slate-50 text-[10px] text-slate-400">${c.logo_base64 ? `<img src="${c.logo_base64}" class="max-h-full max-w-full object-contain"/>` : '無Logo'}</div>
-              <div><div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)}</div><div class="text-xs text-slate-500">${escapeHtml(c.address || '')}</div></div>
+              <div><div class="font-bold text-sm text-slate-800">${escapeHtml(c.name)}</div><div class="text-xs text-slate-500">${escapeHtml(c.phone || '')}</div></div>
             </div>
-            <div class="flex gap-1.5"><button type="button" onclick="editCompanyProfile('${c.id}')" class="text-xs bg-slate-100 px-3 py-1.5 rounded-lg font-semibold">編輯</button><button type="button" onclick="deleteCompanyProfile('${c.id}')" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
+            <div class="flex gap-1.5"><button type="button" onclick="editCompanyProfile('${c.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">編輯</button><button type="button" onclick="deleteCompanyProfile('${c.id}')" class="text-xs text-red-500 px-2.5 py-1.5 rounded-lg">刪除</button></div>
           </div>
         `).join('');
       }
